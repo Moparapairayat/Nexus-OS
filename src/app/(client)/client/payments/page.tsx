@@ -57,7 +57,7 @@ export default function ClientPaymentsHistoryPage() {
     <PageContainer maxWidth="xl">
       <PageHeader
         title="My Payment & Transaction History"
-        description="Records of all settled invoices, UddoktaPay transactions, and downloadable official receipts."
+        description="Records of all settled invoices and downloadable official receipts."
       />
 
       <ResponsiveGrid cols={3}>
@@ -70,13 +70,13 @@ export default function ClientPaymentsHistoryPage() {
         <StatCard
           title="Successful Payments"
           value={String(successCount)}
-          subtitle="Verified via UddoktaPay"
+          subtitle="Admin-verified"
           icon={<CheckCircle className="h-4 w-4 text-blue-500" />}
         />
         <StatCard
           title="Security SLA"
           value="100% Protected"
-          subtitle="Double Verification Active"
+          subtitle="Secured & Audited"
           icon={<ShieldCheck className="h-4 w-4 text-purple-500" />}
         />
       </ResponsiveGrid>

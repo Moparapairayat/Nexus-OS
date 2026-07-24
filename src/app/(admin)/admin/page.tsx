@@ -118,7 +118,7 @@ export default function AdminDashboardPage() {
         <StatCard
           title="Today's Collections"
           value={isLoading ? "..." : `$${(kpis?.todayCollections || 0).toFixed(2)}`}
-          subtitle="Settled UddoktaPay volume"
+          subtitle="Admin-verified collections"
           icon={<CreditCard className="h-4 w-4 text-purple-500" />}
         />
         <StatCard

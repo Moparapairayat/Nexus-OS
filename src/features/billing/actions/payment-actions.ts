@@ -10,10 +10,6 @@ import {
   PaymentReceipt,
   PaymentTransaction,
 } from "@/types/payment";
-import {
-  createUddoktaPayCheckout,
-  verifyUddoktaPayTransaction,
-} from "@/lib/payments/uddoktapay-client";
 
 function getAdmin() {
   return createAdminClient() as any;
@@ -31,139 +27,14 @@ function mapRowToPayment(row: any): PaymentRecord {
     paymentNumber: row.payment_number,
     amount: Number(row.amount || 0),
     currency: row.currency || "USD",
-    method: row.method || "uddoktapay",
+    method: row.method || "manual",
     status: row.status || "pending",
-    gatewayInvoiceId: row.gateway_invoice_id || undefined,
-    paymentUrl: row.payment_url || undefined,
     paymentDate: row.payment_date || row.created_at,
     notes: row.notes || undefined,
     rawPayload: row.raw_payload || undefined,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
-}
-
-/**
- * Initiates an UddoktaPay checkout session for a given invoice.
- */
-export async function createUddoktaPayCheckoutAction(invoiceId: string) {
-  const user = await requireClient();
-  const supabase = getAdmin();
-
-  // 1. Retrieve invoice details
-  const { data: invoiceRow, error: invError } = await supabase
-    .from("invoices")
-    .select(`
-      *,
-      clients (id, company_name, full_name, primary_email)
-    `)
-    .eq("id", invoiceId)
-    .single();
-
-  if (invError || !invoiceRow) {
-    return { success: false, error: "Invoice record not found." };
-  }
-
-  if (invoiceRow.status === "paid") {
-    return { success: false, error: "This invoice has already been paid in full." };
-  }
-
-  const balanceDue = Number(invoiceRow.total || 0) - Number(invoiceRow.paid_amount || 0);
-  if (balanceDue <= 0) {
-    return { success: false, error: "No balance due on this invoice." };
-  }
-
-  // 2. Prepare payment number & URLs
-  const paymentSeq = Date.now().toString().slice(-6);
-  const paymentNumber = `PAY-${new Date().getFullYear()}-${paymentSeq}`;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-
-  // 3. Create pending payment record in DB
-  const { data: paymentRow, error: payError } = await supabase
-    .from("payments")
-    .insert({
-      client_id: invoiceRow.client_id,
-      invoice_id: invoiceRow.id,
-      payment_number: paymentNumber,
-      amount: balanceDue,
-      currency: invoiceRow.currency || "USD",
-      method: "uddoktapay",
-      status: "pending",
-    })
-    .select()
-    .single();
-
-  if (payError || !paymentRow) {
-    return { success: false, error: `Failed to initialize payment record: ${payError?.message}` };
-  }
-
-  // Record initial timeline log
-  await supabase.from("payment_logs").insert({
-    payment_id: paymentRow.id,
-    invoice_id: invoiceRow.id,
-    client_id: invoiceRow.client_id,
-    event_type: "payment_started",
-    description: `Checkout session initialized for ${paymentNumber} (${invoiceRow.currency} ${balanceDue}).`,
-    performed_by: user.fullName || user.email,
-  });
-
-  // 4. Send request to UddoktaPay Gateway
-  const checkoutPayload = {
-    full_name: invoiceRow.clients?.full_name || invoiceRow.clients?.company_name || user.fullName || "Client",
-    email: invoiceRow.clients?.primary_email || user.email,
-    amount: balanceDue,
-    metadata: {
-      invoice_id: invoiceRow.id,
-      client_id: invoiceRow.client_id,
-      payment_id: paymentRow.id,
-      payment_number: paymentNumber,
-    },
-    redirect_url: `${appUrl}/api/payments/uddoktapay/callback?payment_id=${paymentRow.id}`,
-    cancel_url: `${appUrl}/client/invoices/${invoiceRow.id}?payment=cancelled`,
-    webhook_url: `${appUrl}/api/payments/uddoktapay/webhook`,
-  };
-
-  const gatewayRes = await createUddoktaPayCheckout(checkoutPayload);
-
-  if (!gatewayRes.status || !gatewayRes.payment_url) {
-    // Mark payment failed
-    await supabase.from("payments").update({ status: "failed" }).eq("id", paymentRow.id);
-    await supabase.from("payment_logs").insert({
-      payment_id: paymentRow.id,
-      invoice_id: invoiceRow.id,
-      client_id: invoiceRow.client_id,
-      event_type: "payment_failed",
-      description: `UddoktaPay checkout creation failed: ${gatewayRes.message}`,
-      performed_by: "System",
-    });
-
-    return {
-      success: false,
-      error: gatewayRes.message || "Failed to generate UddoktaPay checkout URL.",
-    };
-  }
-
-  // 5. Save gateway invoice ID and checkout URL
-  await supabase
-    .from("payments")
-    .update({
-      gateway_invoice_id: gatewayRes.invoice_id || null,
-      payment_url: gatewayRes.payment_url,
-      status: "processing",
-    })
-    .eq("id", paymentRow.id);
-
-  await supabase.from("payment_logs").insert({
-    payment_id: paymentRow.id,
-    invoice_id: invoiceRow.id,
-    client_id: invoiceRow.client_id,
-    event_type: "redirected",
-    description: `Client redirected to UddoktaPay checkout (${gatewayRes.payment_url}).`,
-    performed_by: "System",
-  });
-
-  revalidatePath(`/client/invoices/${invoiceId}`);
-  return { success: true, checkoutUrl: gatewayRes.payment_url, paymentId: paymentRow.id };
 }
 
 /**
@@ -345,106 +216,6 @@ export async function getPaymentDetailsAction(paymentId: string) {
       receipt,
     },
   };
-}
-
-/**
- * Resyncs payment status directly with UddoktaPay server (Admin Only).
- */
-export async function resyncPaymentWithGatewayAction(paymentId: string) {
-  const user = await requireAdmin();
-  const supabase = getAdmin();
-
-  const { data: paymentRow, error } = await supabase
-    .from("payments")
-    .select("*, invoices(*), clients(*)")
-    .eq("id", paymentId)
-    .single();
-
-  if (error || !paymentRow) {
-    return { success: false, error: "Payment record not found." };
-  }
-
-  const gatewayInvoiceId = paymentRow.gateway_invoice_id;
-  if (!gatewayInvoiceId) {
-    return { success: false, error: "No UddoktaPay Gateway Invoice ID associated with this payment." };
-  }
-
-  const verifyRes = await verifyUddoktaPayTransaction(gatewayInvoiceId);
-  if (!verifyRes.success || !verifyRes.data) {
-    return { success: false, error: verifyRes.error || "Failed to reach UddoktaPay verify endpoint." };
-  }
-
-  const gatewayData = verifyRes.data;
-  const isCompleted = gatewayData.status === "COMPLETED";
-
-  if (isCompleted) {
-    // Complete payment in DB
-    await supabase
-      .from("payments")
-      .update({
-        status: "completed",
-        raw_payload: gatewayData,
-      })
-      .eq("id", paymentId);
-
-    if (paymentRow.invoice_id) {
-      await supabase
-        .from("invoices")
-        .update({
-          status: "paid",
-          paid_amount: paymentRow.amount,
-          balance_due: 0,
-        })
-        .eq("id", paymentRow.invoice_id);
-    }
-
-    // Insert transaction
-    if (gatewayData.transaction_id) {
-      await supabase.from("payment_transactions").upsert({
-        payment_id: paymentId,
-        gateway_name: "uddoktapay",
-        transaction_id: gatewayData.transaction_id,
-        sender_number: gatewayData.sender_number || null,
-        gateway_fee: Number(gatewayData.fee || 0),
-        method: gatewayData.payment_method || "uddoktapay",
-        status: "COMPLETED",
-        raw_payload: gatewayData,
-        verified_at: new Date().toISOString(),
-      }, { onConflict: "transaction_id" });
-    }
-
-    // Generate receipt
-    const receiptNum = `RCT-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
-    await supabase.from("receipts").upsert({
-      payment_id: paymentId,
-      invoice_id: paymentRow.invoice_id,
-      client_id: paymentRow.client_id,
-      receipt_number: receiptNum,
-      invoice_number: paymentRow.invoices?.invoice_number || "INV-000",
-      client_name: paymentRow.clients?.full_name || "Client",
-      company_name: paymentRow.clients?.company_name || "Organization",
-      amount: paymentRow.amount,
-      currency: paymentRow.currency,
-      payment_method: gatewayData.payment_method || "uddoktapay",
-      transaction_id: gatewayData.transaction_id || "N/A",
-      issued_at: new Date().toISOString(),
-    }, { onConflict: "payment_id" });
-
-    await supabase.from("payment_logs").insert({
-      payment_id: paymentId,
-      invoice_id: paymentRow.invoice_id,
-      client_id: paymentRow.client_id,
-      event_type: "resynced",
-      description: `Payment status resynced & verified with UddoktaPay by ${user.fullName || user.email}.`,
-      performed_by: user.fullName || user.email,
-      metadata: gatewayData,
-    });
-  }
-
-  revalidatePath(`/admin/billing/payments`);
-  revalidatePath(`/client/invoices/${paymentRow.invoice_id}`);
-
-  return { success: true, data: { status: gatewayData.status, gatewayData } };
 }
 
 /**

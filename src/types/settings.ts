@@ -26,14 +26,6 @@ export interface InvoiceSettings {
   footerText: string;
 }
 
-export interface GatewaySettings {
-  storeId: string;
-  apiKey: string;
-  baseUrl: string;
-  isSandbox: boolean;
-  webhookSecret?: string;
-}
-
 export interface EmailSettings {
   apiKey?: string;
   senderName: string;
@@ -72,7 +64,6 @@ export interface FullSystemSettingsPayload {
   company: CompanySettings;
   branding: BrandingSettings;
   invoices: InvoiceSettings;
-  uddoktapay: GatewaySettings;
   email: EmailSettings;
   security: SecuritySettings;
 }

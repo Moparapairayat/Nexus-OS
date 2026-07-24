@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Sheet } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,15 @@ import { createInvoiceAction } from "../actions/billing-actions";
 import { BillingType } from "@/types/billing";
 import { Client } from "@/types/client";
 import { FileText, Plus, Trash2, DollarSign, Calendar, AlertCircle } from "lucide-react";
+
+const SHORT_MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+
+function getDaysInMonth(month: number, year: number) {
+  return new Date(year, month + 1, 0).getDate();
+}
 
 interface CreateInvoiceModalProps {
   isOpen: boolean;
@@ -30,7 +39,47 @@ export function CreateInvoiceModal({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const defaultDueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const defaultDueDate = useMemo(() => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10), []);
+  const parsedDefaultDue = useMemo(() => new Date(defaultDueDate + "T00:00:00"), [defaultDueDate]);
+
+  const [dueMonth, setDueMonth] = useState<number>(parsedDefaultDue.getMonth());
+  const [dueYear, setDueYear] = useState<number>(parsedDefaultDue.getFullYear());
+  const [dueDay, setDueDay] = useState<string>(String(parsedDefaultDue.getDate()));
+
+  const dueMonthOptions = useMemo(
+    () =>
+      SHORT_MONTHS.map((name, idx) => ({ value: String(idx), label: name })),
+    []
+  );
+
+  const dueYearOptions = useMemo(() => {
+    const cy = new Date().getFullYear();
+    return Array.from({ length: 11 }, (_, i) => ({
+      value: String(cy + i),
+      label: String(cy + i),
+    }));
+  }, []);
+
+  const dueDayOptions = useMemo(() => {
+    const maxDay = getDaysInMonth(dueMonth, dueYear);
+    return Array.from({ length: maxDay }, (_, i) => ({
+      value: String(i + 1),
+      label: String(i + 1),
+    }));
+  }, [dueMonth, dueYear]);
+
+  const computedDueDate = useMemo(() => {
+    const y = parseInt(dueYear as any, 10);
+    const m = parseInt(String(dueMonth), 10);
+    const d = parseInt(dueDay, 10);
+    const monthStr = String(m + 1).padStart(2, "0");
+    const dayStr = String(d).padStart(2, "0");
+    return `${y}-${monthStr}-${dayStr}`;
+  }, [dueMonth, dueYear, dueDay]);
+
+  useEffect(() => {
+    setFormData((prev) => ({ ...prev, dueDate: computedDueDate }));
+  }, [computedDueDate]);
 
   const [formData, setFormData] = useState({
     clientId: "",
@@ -43,6 +92,14 @@ export function CreateInvoiceModal({
     clientNotes: "Thank you for your business!",
     terms: "Net 30. Standard Enterprise Service SLA applies.",
   });
+
+  const handleDayChange = (val: string) => {
+    const m = parseInt(String(dueMonth), 10);
+    const y = parseInt(String(dueYear), 10);
+    const maxDay = getDaysInMonth(m, y);
+    const clamped = Math.min(parseInt(val, 10), maxDay);
+    setDueDay(String(clamped));
+  };
 
   // Auto-set clientId when clients load
   useEffect(() => {
@@ -179,24 +236,45 @@ export function CreateInvoiceModal({
 
           <FormField>
             <FormLabel htmlFor="dueDate">Due Date *</FormLabel>
-            <Input
-              id="dueDate"
-              type="date"
-              icon={<Calendar className="h-4 w-4" />}
-              value={formData.dueDate}
-              onChange={(e) => setFormData((prev) => ({ ...prev, dueDate: e.target.value }))}
-              required
-            />
+            <div className="grid grid-cols-3 gap-2 items-start">
+              <Select
+                value={String(dueMonth)}
+                onChange={(e) => setDueMonth(parseInt(e.target.value, 10))}
+                options={dueMonthOptions}
+              />
+              <Select value={dueDay} onChange={(e) => handleDayChange(e.target.value)} options={dueDayOptions} />
+              <Select value={String(dueYear)} onChange={(e) => setDueYear(parseInt(e.target.value, 10))} options={dueYearOptions} />
+            </div>
+            <p className="mt-1 text-[10px] text-muted-foreground">Selected due date: <span className="font-mono font-bold text-foreground">{computedDueDate}</span></p>
           </FormField>
 
           <FormField>
             <FormLabel htmlFor="taxRate">Tax Rate (%)</FormLabel>
-            <Input
+            <Select
               id="taxRate"
-              type="number"
-              value={formData.taxRate}
+              value={String(formData.taxRate)}
               onChange={(e) => setFormData((prev) => ({ ...prev, taxRate: Number(e.target.value) }))}
+              options={[
+                { value: "0", label: "0% — No Tax" },
+                { value: "5", label: "5%" },
+                { value: "7.5", label: "7.5%" },
+                { value: "10", label: "10%" },
+                { value: "12.5", label: "12.5%" },
+                { value: "15", label: "15%" },
+                { value: "20", label: "20%" },
+                { value: "custom", label: "Custom..." },
+              ]}
             />
+            {String(formData.taxRate) === "0" || ![0, 5, 7.5, 10, 12.5, 15, 20].includes(formData.taxRate) ? (
+              <Input
+                type="number"
+                step="0.5"
+                value={formData.taxRate}
+                onChange={(e) => setFormData((prev) => ({ ...prev, taxRate: Number(e.target.value) }))}
+                className="mt-2 text-xs"
+                placeholder="Custom tax rate %"
+              />
+            ) : null}
           </FormField>
         </div>
 

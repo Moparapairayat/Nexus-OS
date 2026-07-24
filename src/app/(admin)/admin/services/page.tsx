@@ -13,6 +13,7 @@ import { Select } from "@/components/ui/select";
 import { FormField, FormLabel } from "@/components/ui/form";
 import { Sheet } from "@/components/ui/sheet";
 import { CredentialsVaultDrawer } from "@/features/services/components/credentials-vault-drawer";
+import { ServiceTable } from "@/features/services/components/service-table";
 import {
   getClientServicesAction,
   getServiceCategoriesAction,
@@ -68,6 +69,9 @@ export default function AdminServicesPage() {
     autoRenewal: true,
     domainName: "",
     serverIp: "",
+    _rdMonth: new Date().getMonth(),
+    _rdDay: new Date(Date.now() + 30 * 86400000).getDate(),
+    _rdYear: new Date(Date.now() + 30 * 86400000).getFullYear(),
   });
 
   const fetchData = async () => {
@@ -113,6 +117,9 @@ export default function AdminServicesPage() {
           autoRenewal: true,
           domainName: "",
           serverIp: "",
+          _rdMonth: new Date().getMonth(),
+          _rdDay: new Date(Date.now() + 30 * 86400000).getDate(),
+          _rdYear: new Date(Date.now() + 30 * 86400000).getFullYear(),
         });
         await fetchData();
       } else {
@@ -217,69 +224,25 @@ export default function AdminServicesPage() {
             <p className="text-sm">No digital assets found matching query.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs mobile-card-table">
-              <thead className="bg-muted/40 border-b border-border/60 text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
-                <tr>
-                  <th className="p-3">Asset Name & Type</th>
-                  <th className="p-3">Client Organization</th>
-                  <th className="p-3">Price & Cycle</th>
-                  <th className="p-3">Next Renewal</th>
-                  <th className="p-3">Status</th>
-                  <th className="p-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/40">
-                {services.map((srv) => (
-                  <tr key={srv.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="p-3 font-semibold text-foreground flex items-center gap-2.5" data-label="Asset Name & Type">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted/50 border border-border shrink-0">
-                        <Server className="h-4 w-4 text-primary" />
-                      </div>
-                      <div>
-                        <span className="block font-bold text-foreground">{srv.customName}</span>
-                        <span className="text-[11px] text-muted-foreground">{srv.categoryName}</span>
-                      </div>
-                    </td>
-                    <td className="p-3" data-label="Client Organization">
-                      <span className="block font-bold text-foreground">{srv.companyName}</span>
-                      <span className="text-[11px] text-muted-foreground">{srv.clientName}</span>
-                    </td>
-                    <td className="p-3" data-label="Price & Cycle">
-                      <span className="font-bold text-foreground">${srv.customPrice.toFixed(2)}</span>
-                      <span className="text-[10px] text-muted-foreground block uppercase">{srv.billingCycle}</span>
-                    </td>
-                    <td className="p-3 text-muted-foreground" data-label="Next Renewal">
-                      {srv.renewalDate ? new Date(srv.renewalDate).toLocaleDateString() : "Lifetime / One-Time"}
-                    </td>
-                    <td className="p-3" data-label="Status">
-                      <StatusBadge status={srv.serviceStatus === "active" ? "active" : "pending"} customLabel={srv.serviceStatus} />
-                    </td>
-                    <td className="p-3 text-right flex-wrap gap-1" data-label="Actions">
-                      <div className="flex items-center gap-1.5">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setVaultService({ id: srv.id, name: srv.customName })}
-                          className="h-7 text-xs px-2.5 gap-1 border-primary/30 text-primary hover:bg-primary/10"
-                        >
-                          <Key className="h-3 w-3" /> Credentials
-                        </Button>
-                        <Button
-                          variant="glow"
-                          size="sm"
-                          onClick={() => handleRenew(srv.id, srv.customName)}
-                          className="h-7 text-xs px-2.5 gap-1"
-                        >
-                          <RefreshCw className="h-3 w-3" /> Renew
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ServiceTable
+            data={services}
+            isLoading={isLoading}
+            onStatusChange={async (id, status) => {
+              await updateServiceStatusAction(id, status);
+              await fetchData();
+            }}
+            onRenew={async (id) => {
+              await renewServiceAction(id);
+              await fetchData();
+            }}
+            onRefresh={fetchData}
+            onServiceDeleted={(id) => {
+              setServices((prev) => prev.filter((s) => s.id !== id));
+            }}
+            onServiceUpdated={(id, updated) => {
+              setServices((prev) => prev.map((s) => (s.id === id ? updated : s)));
+            }}
+          />
         )}
       </Card>
 
@@ -346,12 +309,38 @@ export default function AdminServicesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <FormField>
               <FormLabel htmlFor="priceVal">Price ($ / ৳)</FormLabel>
-              <Input
+              <Select
                 id="priceVal"
-                type="number"
-                value={assignForm.customPrice}
-                onChange={(e) => setAssignForm((p) => ({ ...p, customPrice: Number(e.target.value) }))}
+                value={String(assignForm.customPrice)}
+                onChange={(e) =>
+                  e.target.value === "custom"
+                    ? setAssignForm((p) => ({ ...p, customPrice: 0 }))
+                    : setAssignForm((p) => ({ ...p, customPrice: Number(e.target.value) }))
+                }
+                options={[
+                  { value: "9.99", label: "$9.99" },
+                  { value: "19.99", label: "$19.99" },
+                  { value: "29.99", label: "$29.99" },
+                  { value: "49.0", label: "$49.00" },
+                  { value: "79.0", label: "$79.00" },
+                  { value: "99.0", label: "$99.00" },
+                  { value: "149.0", label: "$149.00" },
+                  { value: "199.0", label: "$199.00" },
+                  { value: "299.0", label: "$299.00" },
+                  { value: "499.0", label: "$499.00" },
+                  { value: "custom", label: "Custom Price..." },
+                ]}
               />
+              {(assignForm.customPrice as number) === 0 && (
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={assignForm.customPrice}
+                  onChange={(e) => setAssignForm((p) => ({ ...p, customPrice: Number(e.target.value) }))}
+                  className="mt-2 text-xs"
+                  placeholder="Enter custom amount"
+                />
+              )}
             </FormField>
 
             <FormField>
@@ -372,12 +361,75 @@ export default function AdminServicesPage() {
 
           <FormField>
             <FormLabel htmlFor="renewalDt">Initial Renewal Date</FormLabel>
-            <Input
-              id="renewalDt"
-              type="date"
-              value={assignForm.renewalDate}
-              onChange={(e) => setAssignForm((p) => ({ ...p, renewalDate: e.target.value }))}
-            />
+            <div className="grid grid-cols-3 gap-2">
+              <Select
+                id="renewalDtMonth"
+                value={String(assignForm._rdMonth ?? new Date().getMonth())}
+                onChange={(e) => {
+                  const m = parseInt(e.target.value, 10);
+                  const y = parseInt(String(assignForm._rdYear ?? new Date().getFullYear()), 10);
+                  const maxDay = new Date(y, m + 1, 0).getDate();
+                  const d = Math.min(assignForm._rdDay ?? 1, maxDay);
+                  setAssignForm((p) => ({
+                    ...p,
+                    _rdMonth: m,
+                    _rdDay: d,
+                    renewalDate: `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`,
+                  }));
+                }}
+                options={[
+                  { value: "0", label: "Jan" },
+                  { value: "1", label: "Feb" },
+                  { value: "2", label: "Mar" },
+                  { value: "3", label: "Apr" },
+                  { value: "4", label: "May" },
+                  { value: "5", label: "Jun" },
+                  { value: "6", label: "Jul" },
+                  { value: "7", label: "Aug" },
+                  { value: "8", label: "Sep" },
+                  { value: "9", label: "Oct" },
+                  { value: "10", label: "Nov" },
+                  { value: "11", label: "Dec" },
+                ]}
+              />
+              <Select
+                id="renewalDtDay"
+                value={String(assignForm._rdDay ?? 1)}
+                onChange={(e) => {
+                  const d = parseInt(e.target.value, 10);
+                  const m = parseInt(String(assignForm._rdMonth ?? new Date().getMonth()), 10);
+                  const y = parseInt(String(assignForm._rdYear ?? new Date().getFullYear()), 10);
+                  const maxDay = new Date(y, m + 1, 0).getDate();
+                  const clamped = Math.min(d, maxDay);
+                  setAssignForm((p) => ({
+                    ...p,
+                    _rdDay: clamped,
+                    renewalDate: `${y}-${String(m + 1).padStart(2, "0")}-${String(clamped).padStart(2, "0")}`,
+                  }));
+                }}
+                options={Array.from({ length: 31 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) }))}
+              />
+              <Select
+                id="renewalDtYear"
+                value={String(assignForm._rdYear ?? new Date().getFullYear())}
+                onChange={(e) => {
+                  const y = parseInt(e.target.value, 10);
+                  const m = parseInt(String(assignForm._rdMonth ?? new Date().getMonth()), 10);
+                  const maxDay = new Date(y, m + 1, 0).getDate();
+                  const d = Math.min(assignForm._rdDay ?? 1, maxDay);
+                  setAssignForm((p) => ({
+                    ...p,
+                    _rdYear: y,
+                    _rdDay: d,
+                    renewalDate: `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`,
+                  }));
+                }}
+                options={Array.from({ length: 11 }, (_, i) => {
+                  const cy = new Date().getFullYear();
+                  return { value: String(cy + i), label: String(cy + i) };
+                })}
+              />
+            </div>
           </FormField>
 
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/60">

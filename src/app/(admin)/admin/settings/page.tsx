@@ -275,88 +275,6 @@ export default function AdminSettingsControlCenterPage() {
           ),
         },
         {
-          id: "uddoktapay",
-          label: "UddoktaPay Gateway Manager",
-          content: (
-            <div className="pt-3 max-w-2xl space-y-4">
-              <Card variant="glass" className="p-4 border-emerald-500/30 bg-emerald-500/5 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-5 w-5 text-emerald-500" />
-                    <div>
-                      <span className="font-bold text-xs text-foreground block">UddoktaPay Bangladesh v2 API</span>
-                      <span className="text-[11px] text-muted-foreground">Official single payment gateway provider.</span>
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm" isLoading={isTestingGateway} onClick={handleTestGateway} className="text-xs">
-                    Test Connection
-                  </Button>
-                </div>
-
-                {gatewayTestResult && (
-                  <div className="p-3 rounded-xl border border-emerald-500/20 bg-background text-xs space-y-1 font-mono">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Status:</span>
-                      <span className="font-bold text-emerald-500">{gatewayTestResult.status}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Handshake Latency:</span>
-                      <span className="font-bold text-foreground">{gatewayTestResult.latencyMs} ms</span>
-                    </div>
-                    <p className="text-muted-foreground text-[11px] pt-1">{gatewayTestResult.message}</p>
-                  </div>
-                )}
-              </Card>
-
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSaveCategory("uddoktapay", settings.uddoktapay);
-                }}
-                className="space-y-4"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <FormField>
-                    <FormLabel htmlFor="storeId">Store ID *</FormLabel>
-                    <Input
-                      id="storeId"
-                      value={settings.uddoktapay.storeId}
-                      onChange={(e) => setSettings({ ...settings, uddoktapay: { ...settings.uddoktapay, storeId: e.target.value } })}
-                      required
-                    />
-                  </FormField>
-
-                  <FormField>
-                    <FormLabel htmlFor="apiKey">API Key *</FormLabel>
-                    <Input
-                      id="apiKey"
-                      type="password"
-                      value={settings.uddoktapay.apiKey}
-                      onChange={(e) => setSettings({ ...settings, uddoktapay: { ...settings.uddoktapay, apiKey: e.target.value } })}
-                      required
-                    />
-                  </FormField>
-                </div>
-
-                <FormField>
-                  <FormLabel htmlFor="baseUrl">Base API Endpoint URL</FormLabel>
-                  <Input
-                    id="baseUrl"
-                    value={settings.uddoktapay.baseUrl}
-                    onChange={(e) => setSettings({ ...settings, uddoktapay: { ...settings.uddoktapay, baseUrl: e.target.value } })}
-                  />
-                </FormField>
-
-                <div className="pt-2 flex justify-end">
-                  <Button type="submit" variant="glow" size="sm" isLoading={isSaving}>
-                    <Save className="mr-1.5 h-3.5 w-3.5" /> Save Gateway Settings
-                  </Button>
-                </div>
-              </form>
-            </div>
-          ),
-        },
-        {
           id: "flags",
           label: "Feature Flags & Modules",
           content: (
@@ -398,7 +316,7 @@ export default function AdminSettingsControlCenterPage() {
     <PageContainer maxWidth="xl">
       <PageHeader
         title="System Control Center & Global Settings"
-        description="Operational settings, UddoktaPay credentials, invoice rules, feature flags, and API status."
+        description="Operational settings, invoice rules, feature flags, and API status."
       />
 
       {isLoading ? (

@@ -15,7 +15,6 @@ import { ReceiptModal } from "@/features/billing/components/receipt-modal";
 import {
   getPaymentsAction,
   getPaymentDetailsAction,
-  resyncPaymentWithGatewayAction,
   manuallyVerifyPaymentAction,
 } from "@/features/billing/actions/payment-actions";
 import { PaymentRecord, PaymentFilters, PaymentLog, PaymentReceipt } from "@/types/payment";
@@ -85,27 +84,6 @@ export default function AdminPaymentCenterPage() {
     }
   };
 
-  const handleResync = async () => {
-    if (!selectedPaymentId) return;
-    setIsActionLoading(true);
-    try {
-      const res = await resyncPaymentWithGatewayAction(selectedPaymentId);
-      if (res.success) {
-        toast.success("Resynced with UddoktaPay!", {
-          description: `Gateway status verified: ${res.data?.status || "COMPLETED"}.`,
-        });
-        await handleOpenDetail(selectedPaymentId);
-        await fetchPayments();
-      } else {
-        toastError("Resync Failed", res.error || "Failed to resync payment.");
-      }
-    } catch (err: any) {
-      toastError("Error", err?.message || "An error occurred.");
-    } finally {
-      setIsActionLoading(false);
-    }
-  };
-
   const handleManualVerify = async () => {
     if (!selectedPaymentId) return;
     setIsActionLoading(true);
@@ -138,8 +116,8 @@ export default function AdminPaymentCenterPage() {
   return (
     <PageContainer maxWidth="xl">
       <PageHeader
-        title="UddoktaPay Payment Infrastructure & Audit Center"
-        description="Production payment management, real-time double verification, webhook audit logs, and receipt generation."
+        title="Payment Records & Audit Center"
+        description="Production payment management, admin verification, audit logs, and receipt generation."
       />
 
       {/* KPI Stats */}
@@ -148,7 +126,7 @@ export default function AdminPaymentCenterPage() {
           title="Total Collections"
           value={`$${totalCollected.toFixed(2)}`}
           trend="up"
-          subtitle="Processed via UddoktaPay"
+          subtitle="Admin-verified transactions"
           icon={<DollarSign className="h-4 w-4 text-emerald-500" />}
         />
         <StatCard
@@ -201,7 +179,7 @@ export default function AdminPaymentCenterPage() {
           </div>
         ) : payments.length === 0 ? (
           <div className="p-8 text-center text-xs text-muted-foreground">
-            No UddoktaPay transactions recorded yet.
+            No payment records found. Payments are managed manually by administrators.
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -259,8 +237,8 @@ export default function AdminPaymentCenterPage() {
       <Sheet
         isOpen={Boolean(selectedPaymentId)}
         onClose={() => setSelectedPaymentId(null)}
-        title="UddoktaPay Transaction & Webhook Log"
-        description="Double verification status, timeline audit trail, and gateway actions."
+        title="Payment Transaction & Audit Log"
+        description="Admin verification status, timeline audit trail, and payment actions."
       >
         {isDetailLoading || !detailData ? (
           <div className="flex items-center justify-center py-12">
@@ -282,17 +260,6 @@ export default function AdminPaymentCenterPage() {
 
             {/* Quick Actions */}
             <div className="flex items-center gap-2 flex-wrap pt-1 border-t border-border/40">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleResync}
-                isLoading={isActionLoading}
-                className="text-xs"
-              >
-                <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
-                Resync with UddoktaPay
-              </Button>
-
               {detailData.payment.status !== "completed" && (
                 <Button
                   variant="glow"

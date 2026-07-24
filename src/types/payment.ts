@@ -8,7 +8,6 @@ export type PaymentStatus =
   | "refunded";
 
 export type PaymentMethod =
-  | "uddoktapay"
   | "bkash"
   | "nagad"
   | "rocket"
@@ -31,8 +30,6 @@ export interface PaymentRecord {
   currency: string;
   method: PaymentMethod;
   status: PaymentStatus;
-  gatewayInvoiceId?: string;
-  paymentUrl?: string;
   paymentDate: string;
   notes?: string;
   rawPayload?: any;
@@ -108,39 +105,4 @@ export interface PaymentFilters {
   endDate?: string;
   page?: number;
   limit?: number;
-}
-
-// UddoktaPay API Interfaces
-export interface UddoktaPayCheckoutPayload {
-  full_name: string;
-  email: string;
-  amount: number;
-  metadata: {
-    invoice_id: string;
-    client_id: string;
-    payment_number: string;
-    [key: string]: any;
-  };
-  redirect_url: string;
-  cancel_url: string;
-  webhook_url: string;
-}
-
-export interface UddoktaPayCheckoutResponse {
-  status: boolean;
-  message?: string;
-  payment_url?: string;
-  invoice_id?: string;
-}
-
-export interface UddoktaPayVerifyResponse {
-  status: "COMPLETED" | "PENDING" | "FAILED" | "CANCELLED" | string;
-  transaction_id?: string;
-  invoice_id?: string;
-  amount?: string | number;
-  fee?: string | number;
-  payment_method?: string;
-  sender_number?: string;
-  date?: string;
-  metadata?: any;
 }

@@ -45,14 +45,6 @@ export async function getOperationsOverviewAction() {
       message: "Supabase Storage buckets online.",
     },
     {
-      id: "hc-uddoktapay",
-      serviceName: "uddoktapay",
-      status: "operational",
-      latencyMs: 142,
-      lastCheckedAt: new Date().toISOString(),
-      message: "UddoktaPay Bangladesh v2 API connected.",
-    },
-    {
       id: "hc-email",
       serviceName: "email",
       status: "operational",

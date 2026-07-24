@@ -3,8 +3,9 @@
 import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { PageContainer } from "@/components/layout/page-container";
-import { getServiceByIdAction, updateServiceStatusAction, renewServiceAction } from "@/features/services/actions/service-actions";
-import { ClientService, ServiceStatus } from "@/types/service";
+import { getServiceByIdAction, updateServiceStatusAction, renewServiceAction, deleteServiceAction, getServiceCategoriesAction } from "@/features/services/actions/service-actions";
+import { useRouter } from "next/navigation";
+import { ClientService, ServiceStatus, ServiceCategory } from "@/types/service";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,8 @@ import { Card } from "@/components/ui/card";
 import { ServiceRenewalsManager } from "@/features/services/components/service-renewals-manager";
 import { ServiceApiArchitecture } from "@/features/services/components/service-api-architecture";
 import { ExtendRenewalModal } from "@/features/services/components/extend-renewal-modal";
+import { EditServiceSheet } from "@/features/services/components/edit-service-sheet";
+import { DeleteServiceDialog } from "@/features/services/components/delete-service-dialog";
 import { Timeline } from "@/components/ui/timeline";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -27,25 +30,37 @@ import {
   Building2,
   CheckCircle2,
   ShieldAlert,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 
 export default function ServiceDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const serviceId = resolvedParams.id;
   const { toast } = useToast();
+  const router = useRouter();
 
   const [service, setService] = useState<ClientService | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [extendModalOpen, setExtendModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<ClientService | null>(null);
+  const [categories, setCategories] = useState<ServiceCategory[]>([]);
 
   const fetchServiceData = async () => {
     setIsLoading(true);
     try {
-      const result = await getServiceByIdAction(serviceId);
-      if (result.success && result.data) {
-        setService(result.data);
+      const [svcRes, catRes] = await Promise.all([
+        getServiceByIdAction(serviceId),
+        getServiceCategoriesAction(),
+      ]);
+      if (svcRes.success && svcRes.data) {
+        setService(svcRes.data);
       } else {
         toast.error("Not Found", { description: "Digital asset record not found." });
+      }
+      if (catRes.success && catRes.data) {
+        setCategories(catRes.data);
       }
     } catch (err) {
       toast.error("Error", { description: "Failed to load asset details." });
@@ -259,7 +274,7 @@ export default function ServiceDetailsPage({ params }: { params: Promise<{ id: s
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Button
               variant="glow"
               size="sm"
@@ -272,12 +287,29 @@ export default function ServiceDetailsPage({ params }: { params: Promise<{ id: s
               <RefreshCw className="mr-1.5 h-3.5 w-3.5 text-blue-500" /> Renew Asset
             </Button>
             <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setEditModalOpen(true)}
+              className="text-xs border-blue-500/30 text-blue-500 hover:bg-blue-500/10 gap-1"
+            >
+              <Pencil className="h-3.5 w-3.5" /> Edit
+            </Button>
+            <Button
               variant={service.serviceStatus === "active" ? "secondary" : "glow"}
               size="sm"
               onClick={() => handleStatusChange(service.serviceStatus === "active" ? "suspended" : "active")}
               className="text-xs"
             >
               {service.serviceStatus === "active" ? "Suspend Asset" : "Activate Asset"}
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => setDeleteTarget(service)}
+              className="text-xs"
+            >
+              <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+              Remove
             </Button>
           </div>
         </div>
@@ -304,6 +336,31 @@ export default function ServiceDetailsPage({ params }: { params: Promise<{ id: s
           serviceName={service.customName}
           currentRenewalDate={service.renewalDate}
           onSuccess={fetchServiceData}
+        />
+      )}
+
+      {/* Edit Service Sheet */}
+      {editModalOpen && service && (
+        <EditServiceSheet
+          isOpen={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          service={service}
+          categories={categories}
+          onSuccess={fetchServiceData}
+        />
+      )}
+
+      {/* Delete Service Dialog */}
+      {deleteTarget && (
+        <DeleteServiceDialog
+          service={deleteTarget}
+          isOpen={!!deleteTarget}
+          onClose={() => setDeleteTarget(null)}
+          onDeleted={(id) => {
+            toast.success("Service Removed", { description: "Digital asset has been deleted." });
+            router.push("/admin/services");
+          }}
+          onDelete={deleteServiceAction}
         />
       )}
     </PageContainer>

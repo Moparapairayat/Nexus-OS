@@ -5,7 +5,6 @@ import {
   CompanySettings,
   BrandingSettings,
   InvoiceSettings,
-  GatewaySettings,
   EmailSettings,
   SecuritySettings,
   FeatureFlagRecord,
@@ -43,13 +42,7 @@ const DEFAULT_SETTINGS: FullSystemSettingsPayload = {
     startingNumber: 1001,
     dueDays: 14,
     currency: "USD",
-    footerText: "Thank you for partnering with NexusOS. All payments are securely processed via UddoktaPay.",
-  },
-  uddoktapay: {
-    storeId: "nexus_sandbox",
-    apiKey: "ud_sandbox_api_key_2026",
-    baseUrl: "https://sandbox.uddoktapay.com/api/v2",
-    isSandbox: true,
+    footerText: "Thank you for partnering with NexusOS. All payments are managed manually by our admin team.",
   },
   email: {
     senderName: "NexusOS Operations",
@@ -191,25 +184,6 @@ export async function getAuditLogsAction() {
   }));
 
   return { success: true, data: { auditLogs } };
-}
-
-export async function testGatewayConnectionAction() {
-  await requireAdmin();
-  try {
-    const apiKey = process.env.UDDOKTAPAY_API_KEY || "ud_sandbox_key";
-    const apiUrl = process.env.UDDOKTAPAY_API_URL || "https://sandbox.uddoktapay.com/api/v2";
-    
-    return {
-      success: true,
-      provider: "UddoktaPay Bangladesh v2 API",
-      endpoint: apiUrl,
-      status: "COMPLIANT_ACTIVE",
-      latencyMs: 142,
-      message: "Gateway handshake successful. Ready to process bKash, Nagad, Rocket, and Card payments.",
-    };
-  } catch (err: any) {
-    return { success: false, error: err?.message || "Gateway connection test failed." };
-  }
 }
 
 export async function testEmailConnectionAction() {

@@ -11,7 +11,6 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { InvoicePdfView } from "@/features/billing/components/invoice-pdf-view";
-import { PayInvoiceButton } from "@/features/billing/components/pay-invoice-button";
 import { PaymentTimeline } from "@/features/billing/components/payment-timeline";
 import { ReceiptModal } from "@/features/billing/components/receipt-modal";
 import { useToast } from "@/hooks/use-toast";

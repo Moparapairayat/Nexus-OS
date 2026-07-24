@@ -30,7 +30,7 @@ export function Step1Welcome({ onNext }: Step1WelcomeProps) {
             <ShieldCheck className="h-4 w-4 text-emerald-500" /> Private Self-Hosted Enterprise Environment
           </span>
           <p>
-            You are initializing NexusOS for your organization. This installation wizard will guide you through system diagnostics, company branding, Super Administrator setup, email, and UddoktaPay credentials.
+            You are initializing NexusOS for your organization. This installation wizard will guide you through system diagnostics, company branding, Super Administrator setup, and email configuration.
           </p>
         </div>
 

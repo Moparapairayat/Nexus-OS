@@ -111,28 +111,9 @@ export default function ClientInvoicesPortalPage() {
                       <Download className="mr-1 h-3 w-3" /> View / PDF
                     </Link>
                     {inv.balanceDue > 0 && (
-                      <Button
-                        variant="glow"
-                        size="sm"
-                        onClick={async () => {
-                          try {
-                            toast.info("UddoktaPay Gateway", { description: "Launching secure payment gateway..." });
-                            const { createUddoktaPayCheckoutAction } = await import("@/features/billing/actions/payment-actions");
-                            const res = await createUddoktaPayCheckoutAction(inv.id);
-                            const checkoutUrl = "checkoutUrl" in res ? res.checkoutUrl : null;
-                            if (res.success && checkoutUrl) {
-                              window.location.href = checkoutUrl;
-                            } else {
-                              toast.error("Payment Gateway Notice", { description: res.error || "UddoktaPay API connection ready." });
-                            }
-                          } catch (e: any) {
-                            toast.error("Gateway Error", { description: e?.message || "Failed to launch gateway." });
-                          }
-                        }}
-                        className="h-8 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
-                      >
-                        Pay Online (UddoktaPay)
-                      </Button>
+                      <span className="text-[11px] text-muted-foreground bg-muted/40 px-3 py-1.5 rounded-xl border border-border/60">
+                        Payments are processed manually by our admin team. You will receive a receipt upon confirmation.
+                      </span>
                     )}
                   </div>
                 </div>

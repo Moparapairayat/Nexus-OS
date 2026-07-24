@@ -212,15 +212,43 @@ export function AssignServiceModal({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <FormField>
             <FormLabel htmlFor="customPrice">Recurring Cost *</FormLabel>
-            <Input
+            <Select
               id="customPrice"
-              type="number"
-              step="0.01"
-              icon={<DollarSign className="h-4 w-4" />}
-              value={formData.customPrice}
-              onChange={(e) => handleChange("customPrice", e.target.value)}
-              required
+              value={String(formData.customPrice)}
+              onChange={(e) =>
+                e.target.value === "custom"
+                  ? setFormData((prev) => ({ ...prev, customPrice: 0 }))
+                  : setFormData((prev) => ({ ...prev, customPrice: Number(e.target.value) }))
+              }
+              options={[
+                { value: "9.99", label: "$9.99" },
+                { value: "19.99", label: "$19.99" },
+                { value: "29.99", label: "$29.99" },
+                { value: "49.0", label: "$49.00" },
+                { value: "79.0", label: "$79.00" },
+                { value: "99.0", label: "$99.00" },
+                { value: "149.0", label: "$149.00" },
+                { value: "199.0", label: "$199.00" },
+                { value: "299.0", label: "$299.00" },
+                { value: "499.0", label: "$499.00" },
+                { value: "custom", label: "Custom Price..." },
+              ]}
             />
+            {String(formData.customPrice) === "custom" ||
+            (formData.customPrice as number) === 0 ? (
+              <Input
+                id="customPriceCustom"
+                type="number"
+                step="0.01"
+                value={formData.customPrice === 0 ? "" : formData.customPrice}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, customPrice: Number(e.target.value) || 0 }))
+                }
+                className="mt-2 text-xs"
+                placeholder="Enter custom amount"
+                required
+              />
+            ) : null}
           </FormField>
 
           <FormField>

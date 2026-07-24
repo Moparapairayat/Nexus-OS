@@ -10,7 +10,22 @@ import { Badge } from "@/components/ui/badge";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ExtendRenewalModal } from "./extend-renewal-modal";
-import { MoreHorizontal, ExternalLink, RefreshCw, ShieldAlert, CheckCircle, Globe, Server, Cloud, Calendar } from "lucide-react";
+import { EditServiceSheet } from "./edit-service-sheet";
+import { DeleteServiceDialog } from "./delete-service-dialog";
+import { deleteServiceAction } from "../actions/service-actions";
+import {
+  MoreHorizontal,
+  ExternalLink,
+  RefreshCw,
+  ShieldAlert,
+  CheckCircle,
+  Globe,
+  Server,
+  Cloud,
+  Calendar,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 
 interface ServiceTableProps {
   data: ClientService[];
@@ -18,10 +33,22 @@ interface ServiceTableProps {
   onStatusChange: (id: string, newStatus: ServiceStatus) => void;
   onRenew: (id: string) => void;
   onRefresh?: () => void;
+  onServiceUpdated?: (id: string, updated: ClientService) => void;
+  onServiceDeleted?: (id: string) => void;
 }
 
-export function ServiceTable({ data, isLoading, onStatusChange, onRenew, onRefresh }: ServiceTableProps) {
+export function ServiceTable({
+  data,
+  isLoading,
+  onStatusChange,
+  onRenew,
+  onRefresh,
+  onServiceUpdated,
+  onServiceDeleted,
+}: ServiceTableProps) {
   const [extendTarget, setExtendTarget] = useState<ClientService | null>(null);
+  const [editTarget, setEditTarget] = useState<ClientService | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ClientService | null>(null);
 
   const columns: ColumnDef<ClientService>[] = [
     {
@@ -121,6 +148,12 @@ export function ServiceTable({ data, isLoading, onStatusChange, onRenew, onRefre
             align="right"
             items={[
               {
+                id: "edit",
+                label: "Edit Asset Details",
+                icon: <Pencil className="h-3.5 w-3.5 text-blue-500" />,
+                onClick: () => setEditTarget(srv),
+              },
+              {
                 id: "extend-date",
                 label: "Extend Renewal Date",
                 icon: <Calendar className="h-3.5 w-3.5 text-purple-400" />,
@@ -150,6 +183,13 @@ export function ServiceTable({ data, isLoading, onStatusChange, onRenew, onRefre
                 icon: <ShieldAlert className="h-3.5 w-3.5 text-rose-500" />,
                 onClick: () => onStatusChange(srv.id, "suspended"),
               },
+              {
+                id: "delete",
+                label: "Delete Asset",
+                icon: <Trash2 className="h-3.5 w-3.5 text-rose-500" />,
+                onClick: () => setDeleteTarget(srv),
+                destructive: true,
+              },
             ]}
           />
         );
@@ -168,6 +208,34 @@ export function ServiceTable({ data, isLoading, onStatusChange, onRenew, onRefre
           serviceName={extendTarget.customName}
           currentRenewalDate={extendTarget.renewalDate}
           onSuccess={onRefresh}
+        />
+      )}
+
+      {editTarget && (
+        <EditServiceSheet
+          isOpen={!!editTarget}
+          onClose={() => setEditTarget(null)}
+          service={editTarget}
+          categories={[]}
+          onSuccess={() => {
+            onRefresh?.();
+            if (editTarget && onServiceUpdated) {
+              onServiceUpdated(editTarget.id, editTarget);
+            }
+          }}
+        />
+      )}
+
+      {deleteTarget && (
+        <DeleteServiceDialog
+          service={deleteTarget}
+          isOpen={!!deleteTarget}
+          onClose={() => setDeleteTarget(null)}
+          onDeleted={(id) => {
+            onServiceDeleted?.(id);
+            onRefresh?.();
+          }}
+          onDelete={deleteServiceAction}
         />
       )}
     </>

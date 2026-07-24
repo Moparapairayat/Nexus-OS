@@ -107,20 +107,15 @@ export default function BillingOverviewDashboardPage() {
             Billing Security & Engine Status
           </h3>
 
-          <div className="space-y-3 text-xs">
-            <div className="flex items-start gap-2.5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-              <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-              <div>
-                <span className="font-semibold text-foreground">Automated Invoice Formatting</span>
-                <p className="text-[11px] text-muted-foreground mt-0.5">Sequential numbering (INV-2026-XXXXXX) with multi-currency tax calculation.</p>
+            <div className="space-y-3 text-xs">
+              <div className="flex items-start gap-2.5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-semibold text-foreground">Automated Invoice Formatting</span>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Sequential numbering (INV-2026-XXXXXX) with multi-currency tax calculation.</p>
+                </div>
               </div>
             </div>
-
-            <div className="p-3 rounded-xl bg-muted/40 border border-border/40 space-y-1">
-              <span className="font-semibold text-foreground block">UddoktaPay Payment Gateway Active</span>
-              <p className="text-muted-foreground text-[11px]">Automated online checkout via bKash, Nagad, Rocket & Cards with live instant webhook IPN validation.</p>
-            </div>
-          </div>
         </Card>
       </div>
     </PageContainer>

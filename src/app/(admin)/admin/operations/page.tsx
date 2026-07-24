@@ -264,7 +264,7 @@ export default function AdminOperationsCenterPage() {
     <PageContainer maxWidth="xl">
       <PageHeader
         title="Operations Center & System Monitoring"
-        description="Centralized platform diagnostics, database health, UddoktaPay latency, error tracking, and maintenance mode."
+        description="Centralized platform diagnostics, database health, error tracking, and maintenance mode."
       />
 
       {/* KPI Stats */}
@@ -280,12 +280,6 @@ export default function AdminOperationsCenterPage() {
           value="OPERATIONAL"
           subtitle="PostgreSQL 15.6 Singapore"
           icon={<Server className="h-4 w-4 text-blue-500" />}
-        />
-        <StatCard
-          title="UddoktaPay Connection"
-          value="142 ms"
-          subtitle="Gateway API latency"
-          icon={<Zap className="h-4 w-4 text-amber-500" />}
         />
         <StatCard
           title="Unresolved Errors"

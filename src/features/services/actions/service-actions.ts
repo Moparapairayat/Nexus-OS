@@ -16,6 +16,7 @@ import {
 } from "../schemas/service-schema";
 import { requireAdmin, requireClient } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createInvoiceAction } from "@/features/billing/actions/billing-actions";
 
 function getAdmin() {
   return createAdminClient() as any;
@@ -572,31 +573,92 @@ export async function renewServiceAction(serviceId: string) {
   await requireAdmin();
   const supabase = getAdmin();
 
-  const { data: service } = await supabase
+  const { data: service, error: findError } = await supabase
     .from("services")
-    .select("renewal_date, billing_cycle")
+    .select(`
+      id, client_id, name, price, currency, billing_cycle, renewal_date,
+      clients (id, company_name, full_name, primary_email)
+    `)
     .eq("id", serviceId)
     .single();
 
-  if (!service) return { success: false, error: "Service not found." };
+  if (findError || !service) {
+    return { success: false, error: "Service not found." };
+  }
 
   const currentRenewal = service.renewal_date ? new Date(service.renewal_date) : new Date();
   if (service.billing_cycle === "monthly") {
     currentRenewal.setMonth(currentRenewal.getMonth() + 1);
   } else if (service.billing_cycle === "annual") {
     currentRenewal.setFullYear(currentRenewal.getFullYear() + 1);
+  } else if (service.billing_cycle === "quarterly") {
+    currentRenewal.setMonth(currentRenewal.getMonth() + 3);
+  } else if (service.billing_cycle === "semi_annual") {
+    currentRenewal.setMonth(currentRenewal.getMonth() + 6);
+  } else if (service.billing_cycle === "biennial") {
+    currentRenewal.setFullYear(currentRenewal.getFullYear() + 2);
+  } else {
+    currentRenewal.setFullYear(currentRenewal.getFullYear() + 1);
   }
 
-  const { error } = await supabase
+  const { error: updateError } = await supabase
     .from("services")
     .update({ renewal_date: currentRenewal.toISOString(), status: "active" })
     .eq("id", serviceId);
 
-  if (error) {
-    return { success: false, error: `Failed to renew service: ${error.message}` };
+  if (updateError) {
+    return { success: false, error: `Failed to renew service: ${updateError.message}` };
+  }
+
+  const serviceName = service.name;
+  const servicePrice = Number(service.price || 0);
+  const serviceCurrency = service.currency || "USD";
+  const serviceBillingCycle = service.billing_cycle || "monthly";
+  const serviceClientId = service.client_id;
+
+  if (serviceClientId && servicePrice > 0) {
+    const now = new Date();
+    const issueDate = now.toISOString().substring(0, 10);
+    const dueDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10);
+
+    const invoiceItems = [
+      {
+        title: `${serviceName} Renewal`,
+        description: `Automated renewal billing for ${serviceBillingCycle} cycle.`,
+        quantity: 1,
+        unitPrice: servicePrice,
+        discount: 0,
+        taxRate: 0,
+        serviceId: serviceId,
+        serviceName,
+      },
+    ];
+
+    const invoicePayload: any = {
+      clientId: serviceClientId,
+      items: invoiceItems,
+      issueDate,
+      dueDate,
+      currency: serviceCurrency,
+      billingType: "renewal",
+      taxRate: 0,
+      discountAmount: 0,
+      notes: `Auto-generated renewal invoice for ${serviceName} (${serviceBillingCycle}).`,
+      terms: "Net 30. Standard Enterprise Service SLA applies.",
+    };
+
+    createInvoiceAction(invoicePayload).catch((err) => {
+      console.error("Auto-invoice creation failed after renewal:", err);
+    });
   }
 
   revalidatePath("/admin/services");
+  revalidatePath(`/admin/services/${serviceId}`);
+  revalidatePath("/admin/clients");
+  revalidatePath("/client/services");
+  revalidatePath("/client/renewals");
+  revalidatePath("/client/invoices");
+
   return { success: true };
 }
 

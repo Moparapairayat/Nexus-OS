@@ -196,7 +196,7 @@ export default function AdminAnalyticsWorkspacePage() {
                     <FileText className="h-5 w-5 text-blue-500" />
                     <div>
                       <span className="font-bold text-xs text-foreground block">Revenue & Payment Audit Trail</span>
-                      <span className="text-[11px] text-muted-foreground">Full CSV breakdown of settled UddoktaPay transactions.</span>
+                      <span className="text-[11px] text-muted-foreground">Full CSV breakdown of all payment transactions.</span>
                     </div>
                   </div>
                   <Button variant="outline" size="sm" isLoading={isExporting} onClick={() => handleExportCSV("revenue")} className="text-xs gap-1">

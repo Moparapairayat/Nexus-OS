@@ -67,13 +67,6 @@ export async function runSystemHealthCheckAction(): Promise<{ success: boolean; 
     },
     {
       id: "chk-6",
-      name: "UddoktaPay Payment Gateway API",
-      category: "payments",
-      status: "passed",
-      message: "UddoktaPay credentials API endpoint connection ready.",
-    },
-    {
-      id: "chk-7",
       name: "Server Runtime Environment",
       category: "runtime",
       status: "passed",
@@ -89,13 +82,6 @@ export async function testEmailConfigAction(rawValues: any) {
     return { success: false, error: "Invalid Resend API Key format." };
   }
   return { success: true, message: "Resend Email connection test passed successfully!" };
-}
-
-export async function testUddoktaPayConfigAction(rawValues: any) {
-  if (!rawValues.storeId || !rawValues.signatureKey) {
-    return { success: false, error: "Missing Store ID or Signature Key." };
-  }
-  return { success: true, message: "UddoktaPay Sandbox connection test passed successfully!" };
 }
 
 export async function finalizeInstallationAction(setupPayload: any) {
@@ -221,7 +207,6 @@ export async function finalizeInstallationAction(setupPayload: any) {
     installedBy: adminEmail,
     company: setupPayload.company,
     email: setupPayload.email,
-    uddoktapay: setupPayload.uddoktapay,
     invoice: setupPayload.invoice,
   };
 

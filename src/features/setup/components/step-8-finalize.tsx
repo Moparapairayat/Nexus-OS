@@ -66,9 +66,6 @@ export function Step8Finalize({ setupPayload, onPrev }: Step8FinalizeProps) {
             <div>
               <span>Resend Email:</span> <strong className="text-emerald-500">Configured</strong>
             </div>
-            <div>
-              <span>UddoktaPay Gateway:</span> <strong className="text-emerald-500">Configured</strong>
-            </div>
           </div>
         </div>
 

@@ -44,17 +44,6 @@ export const emailSetupSchema = z.object({
 
 export type EmailSetupValues = z.infer<typeof emailSetupSchema>;
 
-export const uddoktaPaySetupSchema = z.object({
-  storeId: z.string().min(2, "Store ID required."),
-  signatureKey: z.string().min(5, "Signature Key required."),
-  webhookSecret: z.string().min(5, "Webhook secret required."),
-  successUrl: z.string().url("Invalid success URL."),
-  cancelUrl: z.string().url("Invalid cancel URL."),
-  environment: z.enum(["sandbox", "production"]).default("sandbox"),
-});
-
-export type UddoktaPaySetupValues = z.infer<typeof uddoktaPaySetupSchema>;
-
 export const invoiceSetupSchema = z.object({
   prefix: z.string().default("INV-2026-"),
   startingNumber: z.number().min(1).default(1),

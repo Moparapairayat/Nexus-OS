@@ -37,16 +37,6 @@ export interface EmailConfig {
   isVerified: boolean;
 }
 
-export interface UddoktaPayConfig {
-  storeId: string;
-  signatureKey: string;
-  webhookSecret: string;
-  successUrl: string;
-  cancelUrl: string;
-  environment: "sandbox" | "production";
-  isVerified: boolean;
-}
-
 export interface InvoiceSettings {
   prefix: string; // e.g. INV-2026-
   startingNumber: number;
@@ -65,6 +55,5 @@ export interface SystemSettings {
   installedBy?: string;
   company: CompanyInfo;
   email: EmailConfig;
-  uddoktapay: UddoktaPayConfig;
   invoice: InvoiceSettings;
 }
