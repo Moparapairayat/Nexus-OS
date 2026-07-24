@@ -24,6 +24,7 @@ import {
 import { getClientServicesAction } from "@/features/services/actions/service-actions";
 import { SupportTicket, TicketDepartment, TicketPriority, TicketStatus } from "@/types/support";
 import { ClientService } from "@/types/service";
+import { useRealtimeSubscription } from "@/hooks/use-realtime-subscription";
 import { useToast } from "@/hooks/use-toast";
 import {
   MessageSquare,
@@ -83,6 +84,27 @@ export default function ClientSupportPage() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Realtime live chat & ticket status subscriptions
+  useRealtimeSubscription({
+    table: "ticket_messages",
+    event: "INSERT",
+    onPayload: async (payload) => {
+      if (selectedTicketId && payload.new?.ticket_id === selectedTicketId) {
+        const res = await getTicketDetailsAction(selectedTicketId);
+        if (res.success && res.data) setActiveTicket(res.data);
+      }
+    },
+    enabled: !!selectedTicketId,
+  });
+
+  useRealtimeSubscription({
+    table: "support_tickets",
+    event: "*",
+    onPayload: () => {
+      fetchData();
+    },
+  });
 
   const handleOpenTicket = async (id: string) => {
     setSelectedTicketId(id);

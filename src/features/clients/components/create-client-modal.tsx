@@ -9,6 +9,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { createClientAction } from "../actions/client-actions";
+import { GLOBAL_COUNTRIES, GLOBAL_CURRENCIES } from "@/config/countries";
 import { User, Building2, Mail, Phone, Globe, MapPin, Tag } from "lucide-react";
 
 interface CreateClientModalProps {
@@ -155,14 +156,7 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateClientMo
               id="country"
               value={formData.country}
               onChange={(e) => handleChange("country", e.target.value)}
-              options={[
-                { value: "United States", label: "United States" },
-                { value: "United Kingdom", label: "United Kingdom" },
-                { value: "United Arab Emirates", label: "United Arab Emirates" },
-                { value: "Germany", label: "Germany" },
-                { value: "Canada", label: "Canada" },
-                { value: "Australia", label: "Australia" },
-              ]}
+              options={GLOBAL_COUNTRIES}
             />
           </FormField>
 
@@ -172,12 +166,7 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateClientMo
               id="preferredCurrency"
               value={formData.preferredCurrency}
               onChange={(e) => handleChange("preferredCurrency", e.target.value)}
-              options={[
-                { value: "USD", label: "USD ($)" },
-                { value: "EUR", label: "EUR (€)" },
-                { value: "GBP", label: "GBP (£)" },
-                { value: "AED", label: "AED (د.إ)" },
-              ]}
+              options={GLOBAL_CURRENCIES}
             />
           </FormField>
         </div>

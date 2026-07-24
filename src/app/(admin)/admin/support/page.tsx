@@ -32,6 +32,7 @@ import {
   TicketFilters,
   TicketLog,
 } from "@/types/support";
+import { useRealtimeSubscription } from "@/hooks/use-realtime-subscription";
 import { useToast } from "@/hooks/use-toast";
 import {
   HelpCircle,
@@ -92,6 +93,31 @@ export default function AdminSupportWorkspacePage() {
   useEffect(() => {
     fetchTickets();
   }, [filters]);
+
+  // Realtime live chat & ticket status subscriptions
+  useRealtimeSubscription({
+    table: "ticket_messages",
+    event: "INSERT",
+    onPayload: async (payload) => {
+      if (selectedTicketId && payload.new?.ticket_id === selectedTicketId) {
+        const res = await getTicketDetailsAction(selectedTicketId);
+        if (res.success && res.data) {
+          setActiveTicket(res.data.ticket);
+          setActiveService((res.data as any).service || null);
+          setActiveClient((res.data as any).client || null);
+        }
+      }
+    },
+    enabled: !!selectedTicketId,
+  });
+
+  useRealtimeSubscription({
+    table: "support_tickets",
+    event: "*",
+    onPayload: () => {
+      fetchTickets();
+    },
+  });
 
   const handleInspectTicket = async (id: string) => {
     setSelectedTicketId(id);

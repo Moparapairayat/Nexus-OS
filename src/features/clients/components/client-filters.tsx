@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { FormField, FormLabel } from "@/components/ui/form";
 import { Select } from "@/components/ui/select";
 import { ClientStatus, ClientFilters } from "@/types/client";
+import { GLOBAL_COUNTRIES, GLOBAL_CURRENCIES } from "@/config/countries";
 import { Filter, RotateCcw } from "lucide-react";
 
 interface ClientFilterSheetProps {
@@ -74,13 +75,7 @@ export function ClientFilterSheet({
             <Select
               value={localCountry}
               onChange={(e) => setLocalCountry(e.target.value)}
-              options={[
-                { value: "", label: "All Countries" },
-                { value: "United States", label: "United States" },
-                { value: "United Kingdom", label: "United Kingdom" },
-                { value: "United Arab Emirates", label: "United Arab Emirates" },
-                { value: "Germany", label: "Germany" },
-              ]}
+              options={[{ value: "", label: "All Countries" }, ...GLOBAL_COUNTRIES]}
             />
           </FormField>
 
@@ -89,13 +84,7 @@ export function ClientFilterSheet({
             <Select
               value={localCurrency}
               onChange={(e) => setLocalCurrency(e.target.value)}
-              options={[
-                { value: "", label: "All Currencies" },
-                { value: "USD", label: "USD ($)" },
-                { value: "EUR", label: "EUR (€)" },
-                { value: "GBP", label: "GBP (£)" },
-                { value: "AED", label: "AED (د.إ)" },
-              ]}
+              options={[{ value: "", label: "All Currencies" }, ...GLOBAL_CURRENCIES]}
             />
           </FormField>
         </div>

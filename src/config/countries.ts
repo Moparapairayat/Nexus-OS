@@ -1,0 +1,60 @@
+export interface CountryOption {
+  value: string;
+  label: string;
+  code: string;
+}
+
+export const GLOBAL_COUNTRIES: CountryOption[] = [
+  { value: "Bangladesh", label: "Bangladesh", code: "BD" },
+  { value: "United States", label: "United States", code: "US" },
+  { value: "United Kingdom", label: "United Kingdom", code: "GB" },
+  { value: "Canada", label: "Canada", code: "CA" },
+  { value: "Australia", label: "Australia", code: "AU" },
+  { value: "United Arab Emirates", label: "United Arab Emirates", code: "AE" },
+  { value: "Saudi Arabia", label: "Saudi Arabia", code: "SA" },
+  { value: "Qatar", label: "Qatar", code: "QA" },
+  { value: "Kuwait", label: "Kuwait", code: "KW" },
+  { value: "Oman", label: "Oman", code: "OM" },
+  { value: "Bahrain", label: "Bahrain", code: "BH" },
+  { value: "Singapore", label: "Singapore", code: "SG" },
+  { value: "Malaysia", label: "Malaysia", code: "MY" },
+  { value: "India", label: "India", code: "IN" },
+  { value: "Pakistan", label: "Pakistan", code: "PK" },
+  { value: "Germany", label: "Germany", code: "DE" },
+  { value: "France", label: "France", code: "FR" },
+  { value: "Italy", label: "Italy", code: "IT" },
+  { value: "Spain", label: "Spain", code: "ES" },
+  { value: "Netherlands", label: "Netherlands", code: "NL" },
+  { value: "Switzerland", label: "Switzerland", code: "CH" },
+  { value: "Sweden", label: "Sweden", code: "SE" },
+  { value: "Norway", label: "Norway", code: "NO" },
+  { value: "Denmark", label: "Denmark", code: "DK" },
+  { value: "Finland", label: "Finland", code: "FI" },
+  { value: "Japan", label: "Japan", code: "JP" },
+  { value: "South Korea", label: "South Korea", code: "KR" },
+  { value: "China", label: "China", code: "CN" },
+  { value: "Hong Kong", label: "Hong Kong", code: "HK" },
+  { value: "Turkey", label: "Turkey", code: "TR" },
+  { value: "Egypt", label: "Egypt", code: "EG" },
+  { value: "South Africa", label: "South Africa", code: "ZA" },
+  { value: "Brazil", label: "Brazil", code: "BR text" },
+  { value: "Mexico", label: "Mexico", code: "MX" },
+  { value: "Argentina", label: "Argentina", code: "AR" },
+  { value: "New Zealand", label: "New Zealand", code: "NZ" },
+  { value: "International", label: "International / Other", code: "INT" },
+];
+
+export const GLOBAL_CURRENCIES = [
+  { value: "USD", label: "USD ($ - US Dollar)" },
+  { value: "BDT", label: "BDT (৳ - Bangladeshi Taka)" },
+  { value: "EUR", label: "EUR (€ - Euro)" },
+  { value: "GBP", label: "GBP (£ - British Pound)" },
+  { value: "AED", label: "AED (د.إ - UAE Dirham)" },
+  { value: "SAR", label: "SAR (﷼ - Saudi Riyal)" },
+  { value: "CAD", label: "CAD ($ - Canadian Dollar)" },
+  { value: "AUD", label: "AUD ($ - Australian Dollar)" },
+  { value: "SGD", label: "SGD ($ - Singapore Dollar)" },
+  { value: "MYR", label: "MYR (RM - Malaysian Ringgit)" },
+  { value: "INR", label: "INR (₹ - Indian Rupee)" },
+  { value: "JPY", label: "JPY (¥ - Japanese Yen)" },
+];
