@@ -97,11 +97,11 @@ export function CommandPalette() {
     },
     {
       id: "payments-list",
-      title: "Payments & UddoktaPay Gateway",
-      subtitle: "View recent transaction receipts and payment history",
+      title: "Payments & Billing",
+      subtitle: "View payment history and billing records",
       icon: <CreditCard className="h-4 w-4 text-green-500" />,
       category: "Billing",
-      href: "/admin/payments",
+      href: "/admin/billing",
     },
     {
       id: "support-tickets",

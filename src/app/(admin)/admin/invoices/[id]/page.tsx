@@ -115,43 +115,20 @@ export default function InvoiceDetailsPage({ params }: { params: Promise<{ id: s
     },
     {
       id: "payment-email",
-      label: "Payment & Email Dispatch",
+      label: "Payment & Communication",
       content: (
         <div className="pt-4 space-y-6">
-          {/* Payment Gateway Card */}
-          <Card variant="glass" className="p-5 space-y-3 border-emerald-500/30">
+          <Card variant="glass" className="p-5 space-y-3 border-border/60">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5 text-emerald-500" />
-                <span className="font-bold text-sm text-foreground">UddoktaPay Automated Payment Gateway</span>
+                <CreditCard className="h-5 w-5 text-primary" />
+                <span className="font-bold text-sm text-foreground">Manual Payment Processing</span>
               </div>
               <StatusBadge status={invoice.invoiceStatus as any} />
             </div>
             <p className="text-xs text-muted-foreground">
-              Instant automated online checkout via UddoktaPay (bKash, Nagad, Rocket & Cards). Webhook IPN updates payment status automatically.
+              Payments are managed manually by the admin team. Mark invoices as paid via the Payments & Audit Center once payment is confirmed.
             </p>
-            <Button
-              variant="glow"
-              size="sm"
-              onClick={async () => {
-                try {
-                  toast.info("UddoktaPay Gateway", { description: "Preparing secure payment gateway..." });
-                  const { createUddoktaPayCheckoutAction } = await import("@/features/billing/actions/payment-actions");
-                  const res = await createUddoktaPayCheckoutAction(invoice.id);
-                  const checkoutUrl = "checkoutUrl" in res ? res.checkoutUrl : null;
-                  if (res.success && checkoutUrl) {
-                    window.location.href = checkoutUrl;
-                  } else {
-                    toast.error("Payment Gateway Notice", { description: res.error || "UddoktaPay API connection ready." });
-                  }
-                } catch (e: any) {
-                  toast.error("Gateway Error", { description: e?.message || "Failed to launch gateway." });
-                }
-              }}
-              className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
-            >
-              Pay ${invoice.balanceDue.toFixed(2)} via UddoktaPay Online
-            </Button>
           </Card>
 
           <InvoiceEmailArchitecture

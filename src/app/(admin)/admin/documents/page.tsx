@@ -287,7 +287,7 @@ export default function AdminDigitalVaultPage() {
     <PageContainer maxWidth="xl">
       <PageHeader
         title="Digital Vault & Document Management Center"
-        description="Centralized indexing for contracts, invoices, UddoktaPay receipts, SSL certificates, and client files."
+        description="Centralized indexing for contracts, invoices, payment receipts, SSL certificates, and client files."
       />
 
       {/* KPI Stats */}

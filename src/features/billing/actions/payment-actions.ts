@@ -93,8 +93,7 @@ export async function getPaymentsAction(filters: PaymentFilters = {}) {
         p.paymentNumber.toLowerCase().includes(q) ||
         (p.invoiceNumber && p.invoiceNumber.toLowerCase().includes(q)) ||
         (p.companyName && p.companyName.toLowerCase().includes(q)) ||
-        (p.clientName && p.clientName.toLowerCase().includes(q)) ||
-        (p.gatewayInvoiceId && p.gatewayInvoiceId.toLowerCase().includes(q))
+        (p.clientName && p.clientName.toLowerCase().includes(q))
     );
   }
 
@@ -173,7 +172,7 @@ export async function getPaymentDetailsAction(paymentId: string) {
         transactionId: trxData.transaction_id,
         senderNumber: trxData.sender_number || undefined,
         gatewayFee: Number(trxData.gateway_fee || 0),
-        method: trxData.method || "uddoktapay",
+        method: trxData.method || "manual",
         status: trxData.status || "COMPLETED",
         rawPayload: trxData.raw_payload || undefined,
         verifiedAt: trxData.verified_at || undefined,

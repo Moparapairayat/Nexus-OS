@@ -107,12 +107,9 @@ export default function ClientInvoiceDetailsPortalPage({ params }: { params: Pro
             </Button>
 
             {!isPaid ? (
-              <PayInvoiceButton
-                invoiceId={invoice.id}
-                amount={invoice.balanceDue}
-                currency={invoice.currency}
-                isPaid={isPaid}
-              />
+              <span className="text-[11px] text-muted-foreground bg-muted/40 px-3 py-1.5 rounded-xl border border-border/60">
+                Payment will be processed manually by our team. You will be notified once confirmed.
+              </span>
             ) : (
               <Button
                 variant="glow"
@@ -148,19 +145,19 @@ export default function ClientInvoiceDetailsPortalPage({ params }: { params: Pro
         {/* Timeline & Payment Status Side Panel */}
         <div className="space-y-6">
           <Card variant="glass" className="p-5 space-y-4">
-            <h3 className="text-sm font-bold text-foreground">Payment Verification & Gateway</h3>
+            <h3 className="text-sm font-bold text-foreground">Payment Status</h3>
             <div className="p-3 rounded-xl border border-border/60 bg-muted/20 text-xs space-y-2">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Provider:</span>
-                <span className="font-semibold text-foreground">UddoktaPay (v2 API)</span>
+                <span className="text-muted-foreground">Processing:</span>
+                <span className="font-semibold text-foreground">Manual Admin Verification</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Methods:</span>
-                <span className="font-semibold text-foreground">bKash / Nagad / Card</span>
+                <span className="font-semibold text-foreground">Bank Transfer / Manual</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Double Verified:</span>
-                <span className="font-semibold text-emerald-500">Yes (Server-Side)</span>
+                <span className="text-muted-foreground">Receipt:</span>
+                <span className="font-semibold text-emerald-500">Issued on confirmation</span>
               </div>
             </div>
           </Card>
@@ -202,7 +199,7 @@ export default function ClientInvoiceDetailsPortalPage({ params }: { params: Pro
             companyName: invoice.companyName,
             amount: invoice.grandTotal,
             currency: invoice.currency,
-            paymentMethod: "uddoktapay",
+            paymentMethod: "manual",
             transactionId: `TRX-${Date.now().toString().slice(-8)}`,
             issuedAt: new Date().toISOString(),
           }

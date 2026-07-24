@@ -251,9 +251,6 @@ export default function AdminPaymentCenterPage() {
               <div>
                 <span className="text-[10px] uppercase font-bold text-muted-foreground block">Payment Reference</span>
                 <span className="font-mono font-bold text-base text-foreground">{detailData.payment.paymentNumber}</span>
-                <span className="text-xs text-muted-foreground block font-mono">
-                  Gateway Invoice: {detailData.payment.gatewayInvoiceId || "N/A"}
-                </span>
               </div>
               <StatusBadge status={detailData.payment.status as any} />
             </div>

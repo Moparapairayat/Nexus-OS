@@ -16,7 +16,6 @@ import {
   updateSystemSettingsAction,
   getFeatureFlagsAction,
   toggleFeatureFlagAction,
-  testGatewayConnectionAction,
   testEmailConnectionAction,
 } from "@/features/settings/actions/settings-actions";
 import { FullSystemSettingsPayload, FeatureFlagRecord } from "@/types/settings";
@@ -33,7 +32,6 @@ import {
   CheckCircle,
   AlertCircle,
   Save,
-  Zap,
   Activity,
   Globe,
   Lock,
@@ -45,8 +43,6 @@ export default function AdminSettingsControlCenterPage() {
   const [flags, setFlags] = useState<FeatureFlagRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [isTestingGateway, setIsTestingGateway] = useState(false);
-  const [gatewayTestResult, setGatewayTestResult] = useState<any>(null);
   const [isTestingEmail, setIsTestingEmail] = useState(false);
   const [emailTestResult, setEmailTestResult] = useState<any>(null);
 
@@ -97,19 +93,6 @@ export default function AdminSettingsControlCenterPage() {
       }
     } catch (err: any) {
       toastError("Error", err?.message);
-    }
-  };
-
-  const handleTestGateway = async () => {
-    setIsTestingGateway(true);
-    try {
-      const res = await testGatewayConnectionAction();
-      setGatewayTestResult(res);
-      if (res.success) {
-        toast.success("Gateway Online", { description: res.message });
-      }
-    } finally {
-      setIsTestingGateway(false);
     }
   };
 

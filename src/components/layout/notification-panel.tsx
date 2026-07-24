@@ -47,8 +47,8 @@ const INITIAL_NOTIFICATIONS: Notification[] = [
   },
   {
     id: "n4",
-    title: "Payment Gateway Connection Ready",
-    message: "UddoktaPay payment gateway active for automated online checkouts and IPN webhooks.",
+    title: "Manual Payment Processing Active",
+    message: "Payments are managed manually by the admin team. All transactions are verified and recorded in the billing center.",
     timestamp: "1 day ago",
     category: "billing",
     type: "success",
