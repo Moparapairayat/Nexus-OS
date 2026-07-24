@@ -92,7 +92,7 @@ export default function ClientSupportPage() {
     onPayload: async (payload) => {
       if (selectedTicketId && payload.new?.ticket_id === selectedTicketId) {
         const res = await getTicketDetailsAction(selectedTicketId);
-        if (res.success && res.data) setActiveTicket(res.data);
+        if (res.success && res.data) setActiveTicket(res.data.ticket);
       }
     },
     enabled: !!selectedTicketId,
