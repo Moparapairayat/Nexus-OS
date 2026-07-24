@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { createClientAction } from "../actions/client-actions";
 import { GLOBAL_COUNTRIES, GLOBAL_CURRENCIES } from "@/config/countries";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { User, Building2, Mail, Phone, Globe, MapPin, Tag } from "lucide-react";
 
 interface CreateClientModalProps {
@@ -139,12 +140,10 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateClientMo
 
           <FormField>
             <FormLabel htmlFor="phone">Phone Number</FormLabel>
-            <Input
+            <PhoneInput
               id="phone"
-              placeholder="+1 (555) 000-0000"
-              icon={<Phone className="h-4 w-4" />}
               value={formData.phone}
-              onChange={(e) => handleChange("phone", e.target.value)}
+              onChange={(val) => handleChange("phone", val)}
             />
           </FormField>
         </div>

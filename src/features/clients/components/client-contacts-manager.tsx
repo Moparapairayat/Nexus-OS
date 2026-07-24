@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { FormField, FormLabel } from "@/components/ui/form";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Select } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { addContactAction } from "../actions/client-actions";
@@ -101,7 +102,7 @@ export function ClientContactsManager({ clientId, contacts: initialContacts }: C
               </FormField>
               <FormField>
                 <FormLabel>Phone</FormLabel>
-                <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 (555) 000-0000" />
+                <PhoneInput value={phone} onChange={setPhone} />
               </FormField>
             </div>
 
