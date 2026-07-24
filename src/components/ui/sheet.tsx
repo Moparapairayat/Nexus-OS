@@ -54,8 +54,8 @@ export function Sheet({
   if (!isOpen || !mounted) return null;
 
   const sideStyles = {
-    right: "right-0 h-full w-full max-w-md animate-in slide-in-from-right duration-250",
-    left: "left-0 h-full w-full max-w-md animate-in slide-in-from-left duration-250",
+    right: "right-0 h-full w-full sm:max-w-md animate-in slide-in-from-right duration-250",
+    left: "left-0 h-full w-full sm:max-w-md animate-in slide-in-from-left duration-250",
   };
 
   return createPortal(

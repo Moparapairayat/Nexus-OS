@@ -4,38 +4,79 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, User, Shield, Settings } from "lucide-react";
+import {
+  LayoutDashboard,
+  Package,
+  FileText,
+  MessageSquare,
+  Users,
+  CreditCard,
+  Bell,
+  Settings,
+  BarChart3,
+  User,
+} from "lucide-react";
+
+const adminNavItems = [
+  { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { label: "Clients", href: "/admin/clients", icon: Users },
+  { label: "Billing", href: "/admin/billing", icon: CreditCard },
+  { label: "Support", href: "/admin/support", icon: MessageSquare },
+  { label: "Settings", href: "/admin/settings", icon: Settings },
+];
+
+const clientNavItems = [
+  { label: "Home", href: "/client", icon: LayoutDashboard },
+  { label: "Services", href: "/client/services", icon: Package },
+  { label: "Invoices", href: "/client/invoices", icon: FileText },
+  { label: "Support", href: "/client/support", icon: MessageSquare },
+  { label: "Profile", href: "/client/profile", icon: User },
+];
 
 export function BottomNav() {
   const pathname = usePathname();
+  const isAdmin = pathname.startsWith("/admin");
+  const navItems = isAdmin ? adminNavItems : clientNavItems;
 
-  const navItems = [
-    { label: "Admin", href: "/admin", icon: LayoutDashboard },
-    { label: "Client", href: "/client", icon: User },
-    { label: "Password", href: "/change-password", icon: Settings },
-  ];
+  if (!pathname.startsWith("/admin") && !pathname.startsWith("/client")) return null;
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/80 backdrop-blur-md glass-panel px-4 py-2">
-      <div className="flex items-center justify-around">
+    <nav
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-border/80 bg-background/95 backdrop-blur-xl"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    >
+      <div className="flex items-center justify-around h-13 px-1">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname.startsWith(item.href);
+          const isActive =
+            item.href === "/admin" || item.href === "/client"
+              ? pathname === item.href
+              : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center gap-1 text-[10px] font-medium transition-colors p-1 rounded-lg",
-                isActive ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"
+                "relative flex flex-col items-center justify-center gap-0.5 flex-1 py-1.5 rounded-xl text-[9px] sm:text-[10px] font-medium transition-all duration-200",
+                isActive
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <Icon className={cn("h-4 w-4", isActive && "text-primary")} />
-              <span>{item.label}</span>
+              {isActive && (
+                <span className="absolute top-1 h-1 w-1 rounded-full bg-primary" />
+              )}
+              <Icon
+                className={cn(
+                  "h-5 w-5 transition-all",
+                  isActive && "scale-110"
+                )}
+              />
+              <span className="truncate max-w-[3.5rem] leading-none">{item.label}</span>
             </Link>
           );
         })}
       </div>
-    </div>
+    </nav>
   );
 }

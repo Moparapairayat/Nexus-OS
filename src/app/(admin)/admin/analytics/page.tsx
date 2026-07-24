@@ -138,7 +138,7 @@ export default function AdminAnalyticsWorkspacePage() {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs mobile-card-table">
                   <thead className="bg-muted/40 border-b border-border/60 text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
                     <tr>
                       <th className="p-3">Rank</th>
@@ -152,15 +152,17 @@ export default function AdminAnalyticsWorkspacePage() {
                   <tbody className="divide-y divide-border/40">
                     {payload.topClients.map((cli, idx) => (
                       <tr key={cli.clientId} className="hover:bg-muted/20 transition-colors">
-                        <td className="p-3 font-mono font-bold text-muted-foreground">#{idx + 1}</td>
-                        <td className="p-3 font-bold text-foreground flex items-center gap-2">
-                          <Building2 className="h-3.5 w-3.5 text-primary" />
-                          <span>{cli.companyName}</span>
+                        <td className="p-3 font-mono font-bold text-muted-foreground" data-label="Rank">#{idx + 1}</td>
+                        <td className="p-3 font-bold text-foreground" data-label="Client Organization">
+                          <div className="flex items-center gap-2">
+                            <Building2 className="h-3.5 w-3.5 text-primary shrink-0" />
+                            <span>{cli.companyName}</span>
+                          </div>
                         </td>
-                        <td className="p-3 text-muted-foreground">{cli.primaryEmail}</td>
-                        <td className="p-3 font-semibold">{cli.activeServicesCount} Provisioned</td>
-                        <td className="p-3 font-mono font-bold text-emerald-500">${cli.totalRevenue.toFixed(2)}</td>
-                        <td className="p-3">
+                        <td className="p-3 text-muted-foreground" data-label="Primary Email">{cli.primaryEmail}</td>
+                        <td className="p-3 font-semibold" data-label="Active Assets">{cli.activeServicesCount} Provisioned</td>
+                        <td className="p-3 font-mono font-bold text-emerald-500" data-label="Lifetime Revenue">${cli.totalRevenue.toFixed(2)}</td>
+                        <td className="p-3" data-label="Account Status">
                           <StatusBadge status={cli.status as any} />
                         </td>
                       </tr>

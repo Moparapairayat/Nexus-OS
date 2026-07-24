@@ -82,7 +82,7 @@ export default function AdminAuditLogsPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs mobile-card-table">
               <thead className="bg-muted/40 border-b border-border/60 text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
                 <tr>
                   <th className="p-3">Action Description</th>
@@ -94,19 +94,19 @@ export default function AdminAuditLogsPage() {
               <tbody className="divide-y divide-border/40">
                 {filteredLogs.map((log) => (
                   <tr key={log.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="p-3 font-semibold text-foreground flex items-center gap-2">
-                      <ShieldCheck className="h-4 w-4 text-primary shrink-0" />
-                      <span>{log.action}</span>
+                    <td className="p-3 font-semibold text-foreground" data-label="Action Description">
+                      <div className="flex items-center gap-2">
+                        <ShieldCheck className="h-4 w-4 text-primary shrink-0" />
+                        <span>{log.action}</span>
+                      </div>
                     </td>
-                    <td className="p-3 text-muted-foreground font-medium">{log.actorName}</td>
-                    <td className="p-3">
+                    <td className="p-3 text-muted-foreground font-medium" data-label="Actor / Admin">{log.actorName}</td>
+                    <td className="p-3" data-label="Category">
                       <span className="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold bg-muted text-muted-foreground uppercase">
                         {log.category}
                       </span>
                     </td>
-                    <td className="p-3 text-muted-foreground font-mono">
-                      {new Date(log.createdAt).toLocaleString()}
-                    </td>
+                    <td className="p-3 text-muted-foreground font-mono" data-label="Timestamp">{new Date(log.createdAt).toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>

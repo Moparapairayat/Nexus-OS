@@ -381,16 +381,16 @@ export function ClientTable({
 
         {/* Main DataTable — with per-row checkbox overlay */}
         <div className="relative">
-          {/* Row checkboxes overlay */}
+          {/* Row checkboxes overlay (desktop only) */}
           {!isLoading && data.length > 0 && (
-            <div className="absolute left-0 top-0 bottom-0 w-10 z-10 pointer-events-none">
+            <div className="hidden md:block absolute left-0 top-0 bottom-0 w-10 z-10 pointer-events-none">
               {/* Spacer for header row ~40px */}
               <div style={{ height: 40 }} />
               {data.map((client, i) => (
                 <div
                   key={client.id}
                   className="flex items-center justify-center pointer-events-auto"
-                  style={{ height: 53 }} // matches tanstack row height
+                  style={{ height: 53 }}
                 >
                   <button
                     onClick={() => toggleOne(client.id)}
@@ -409,7 +409,7 @@ export function ClientTable({
             </div>
           )}
 
-          <div className={!isLoading && data.length > 0 ? "pl-10" : ""}>
+          <div className={!isLoading && data.length > 0 ? "pl-10 md:pl-0" : ""}>
             <DataTable
               columns={columns}
               data={data}

@@ -218,7 +218,7 @@ export default function AdminServicesPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs mobile-card-table">
               <thead className="bg-muted/40 border-b border-border/60 text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
                 <tr>
                   <th className="p-3">Asset Name & Type</th>
@@ -232,7 +232,7 @@ export default function AdminServicesPage() {
               <tbody className="divide-y divide-border/40">
                 {services.map((srv) => (
                   <tr key={srv.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="p-3 font-semibold text-foreground flex items-center gap-2.5">
+                    <td className="p-3 font-semibold text-foreground flex items-center gap-2.5" data-label="Asset Name & Type">
                       <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted/50 border border-border shrink-0">
                         <Server className="h-4 w-4 text-primary" />
                       </div>
@@ -241,22 +241,22 @@ export default function AdminServicesPage() {
                         <span className="text-[11px] text-muted-foreground">{srv.categoryName}</span>
                       </div>
                     </td>
-                    <td className="p-3 font-bold text-foreground">
-                      <span className="block">{srv.companyName}</span>
+                    <td className="p-3" data-label="Client Organization">
+                      <span className="block font-bold text-foreground">{srv.companyName}</span>
                       <span className="text-[11px] text-muted-foreground">{srv.clientName}</span>
                     </td>
-                    <td className="p-3 font-mono">
+                    <td className="p-3" data-label="Price & Cycle">
                       <span className="font-bold text-foreground">${srv.customPrice.toFixed(2)}</span>
                       <span className="text-[10px] text-muted-foreground block uppercase">{srv.billingCycle}</span>
                     </td>
-                    <td className="p-3 font-mono text-muted-foreground">
+                    <td className="p-3 text-muted-foreground" data-label="Next Renewal">
                       {srv.renewalDate ? new Date(srv.renewalDate).toLocaleDateString() : "Lifetime / One-Time"}
                     </td>
-                    <td className="p-3">
+                    <td className="p-3" data-label="Status">
                       <StatusBadge status={srv.serviceStatus === "active" ? "active" : "pending"} customLabel={srv.serviceStatus} />
                     </td>
-                    <td className="p-3 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
+                    <td className="p-3 text-right flex-wrap gap-1" data-label="Actions">
+                      <div className="flex items-center gap-1.5">
                         <Button
                           variant="outline"
                           size="sm"

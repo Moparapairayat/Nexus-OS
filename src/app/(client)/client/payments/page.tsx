@@ -92,7 +92,7 @@ export default function ClientPaymentsHistoryPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs mobile-card-table">
               <thead className="bg-muted/40 border-b border-border/60 text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
                 <tr>
                   <th className="p-3">Payment #</th>
@@ -107,17 +107,19 @@ export default function ClientPaymentsHistoryPage() {
               <tbody className="divide-y divide-border/40">
                 {payments.map((p) => (
                   <tr key={p.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="p-3 font-mono font-bold text-foreground">{p.paymentNumber}</td>
-                    <td className="p-3 font-mono text-muted-foreground">{p.invoiceNumber || "N/A"}</td>
-                    <td className="p-3 font-bold text-foreground">
+                    <td className="p-3 font-mono font-bold text-foreground" data-label="Payment #">{p.paymentNumber}</td>
+                    <td className="p-3 font-mono text-muted-foreground" data-label="Invoice #">{p.invoiceNumber || "N/A"}</td>
+                    <td className="p-3 font-bold text-foreground" data-label="Amount">
                       ${p.amount.toFixed(2)} {p.currency}
                     </td>
-                    <td className="p-3 capitalize font-medium">{p.method}</td>
-                    <td className="p-3">
+                    <td className="p-3" data-label="Gateway Method">
+                      <span className="capitalize font-medium">{p.method}</span>
+                    </td>
+                    <td className="p-3" data-label="Status">
                       <StatusBadge status={p.status as any} />
                     </td>
-                    <td className="p-3 text-muted-foreground">{new Date(p.paymentDate).toLocaleDateString()}</td>
-                    <td className="p-3 text-right">
+                    <td className="p-3 text-muted-foreground" data-label="Date">{new Date(p.paymentDate).toLocaleDateString()}</td>
+                    <td className="p-3 text-right" data-label="Receipt">
                       {p.status === "completed" && (
                         <Button
                           variant="ghost"

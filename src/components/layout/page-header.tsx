@@ -17,10 +17,10 @@ export function PageHeader({
   className,
 }: PageHeaderProps) {
   return (
-    <div className={cn("flex flex-wrap items-start justify-between gap-4 pb-5 border-b border-border/60 mb-6", className)}>
-      <div className="space-y-1">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl md:text-3xl font-black tracking-tight text-foreground bg-gradient-to-r from-foreground via-foreground to-foreground/80 bg-clip-text">
+    <div className={cn("flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 pb-4 sm:pb-5 border-b border-border/60 mb-4 sm:mb-6", className)}>
+      <div className="space-y-1 min-w-0">
+        <div className="flex items-center gap-3 flex-wrap">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-foreground bg-gradient-to-r from-foreground via-foreground to-foreground/80 bg-clip-text truncate">
             {title}
           </h1>
           {badge}
@@ -31,7 +31,7 @@ export function PageHeader({
           </p>
         )}
       </div>
-      {actions && <div className="flex items-center gap-2.5 shrink-0 pt-0.5">{actions}</div>}
+      {actions && <div className="flex items-center gap-2 flex-wrap shrink-0">{actions}</div>}
     </div>
   );
 }

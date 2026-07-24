@@ -34,35 +34,35 @@ export function StatCard({
     <Card
       variant="glass"
       className={cn(
-        "relative overflow-hidden p-5 flex flex-col justify-between space-y-3 group hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300",
+        "relative overflow-hidden p-3 sm:p-4 md:p-5 flex flex-col justify-between space-y-2 sm:space-y-3 group hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300",
         className
       )}
     >
       {/* Top Accent Highlight */}
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {title}
         </span>
         {icon && (
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-purple-500/10 text-primary border border-primary/20 shadow-sm group-hover:scale-105 transition-transform duration-300">
+          <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-purple-500/10 text-primary border border-primary/20 shadow-sm group-hover:scale-105 transition-transform duration-300">
             {icon}
           </div>
         )}
       </div>
 
       <div>
-        <div className="text-2xl md:text-3xl font-black tracking-tight text-foreground font-mono">
+        <div className="text-lg sm:text-xl md:text-2xl md:md:text-3xl font-black tracking-tight text-foreground font-mono">
           {value}
         </div>
 
         {(change !== undefined || subtitle) && (
-          <div className="flex items-center gap-2 mt-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 mt-1 sm:mt-2">
             {change !== undefined && (
               <span
                 className={cn(
-                  "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold",
+                  "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] sm:text-[11px] font-semibold",
                   trendColors[trend]
                 )}
               >
@@ -70,7 +70,7 @@ export function StatCard({
                 {change}
               </span>
             )}
-            {subtitle && <span className="text-xs text-muted-foreground truncate">{subtitle}</span>}
+            {subtitle && <span className="text-[11px] text-muted-foreground truncate">{subtitle}</span>}
           </div>
         )}
       </div>

@@ -12,6 +12,7 @@ import {
   serviceCategorySchema,
   serviceTemplateSchema,
   assignServiceSchema,
+  updateServiceSchema,
 } from "../schemas/service-schema";
 import { requireAdmin, requireClient } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -438,6 +439,132 @@ export async function updateServiceStatusAction(serviceId: string, newStatus: Se
   }
 
   revalidatePath("/admin/services");
+  return { success: true };
+}
+
+export async function updateServiceAction(serviceId: string, rawValues: any) {
+  await requireAdmin();
+  const supabase = getAdmin();
+
+  const validation = updateServiceSchema.safeParse(rawValues);
+  if (!validation.success) {
+    return {
+      success: false,
+      error: "Validation failed. Please check form inputs.",
+      fieldErrors: validation.error.flatten().fieldErrors,
+    };
+  }
+
+  const data = validation.data;
+
+  const { data: updated, error } = await supabase
+    .from("services")
+    .update({
+      name: data.customName,
+      category_id: data.categoryId,
+      status: data.serviceStatus,
+      billing_cycle: data.billingCycle,
+      currency: data.currency,
+      price: data.customPrice,
+      renewal_date: data.renewalDate || null,
+      auto_renew: data.autoRenewal,
+      description: data.clientNotes || null,
+      metadata: {
+        domain_name: data.domainName || null,
+        server_ip: data.serverIp || null,
+        cloudflare_zone_id: data.cloudflareZoneId || null,
+        internal_notes: data.internalNotes || null,
+        tags: data.tags || [],
+      },
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", serviceId)
+    .is("deleted_at", null)
+    .select(`
+      *,
+      clients (id, company_name, full_name, primary_email),
+      service_categories (id, name)
+    `)
+    .single();
+
+  if (error || !updated) {
+    return { success: false, error: `Failed to update service: ${error?.message}` };
+  }
+
+  await supabase.from("service_activities").insert({
+    service_id: serviceId,
+    activity_type: "updated",
+    title: "Service Details Updated",
+    description: `Service [${data.customName}] was modified by admin.`,
+    performed_by: "Admin",
+  });
+
+  revalidatePath("/admin/services");
+  revalidatePath(`/admin/services/${serviceId}`);
+  revalidatePath("/client/services");
+
+  const meta = updated.metadata || {};
+  const service: ClientService = {
+    id: updated.id,
+    clientId: updated.client_id,
+    clientName: updated.clients?.full_name || updated.clients?.company_name || "Client Account",
+    companyName: updated.clients?.company_name || "Organization",
+    customName: updated.name,
+    categoryId: updated.category_id,
+    categoryName: updated.service_categories?.name || "Digital Asset",
+    customPrice: Number(updated.price || 0),
+    currency: updated.currency || "USD",
+    billingCycle: updated.billing_cycle || "monthly",
+    purchaseDate: updated.purchase_date,
+    renewalDate: updated.renewal_date || updated.purchase_date,
+    expirationDate: updated.renewal_date || updated.purchase_date,
+    serviceStatus: updated.status as ServiceStatus,
+    autoRenewal: updated.auto_renew ?? true,
+    domainName: meta.domain_name || undefined,
+    serverIp: meta.server_ip || undefined,
+    cloudflareZoneId: meta.cloudflare_zone_id || undefined,
+    internalNotes: meta.internal_notes || undefined,
+    clientNotes: updated.description || undefined,
+    tags: meta.tags || [],
+    renewals: [],
+    files: [],
+    activities: [],
+    createdAt: updated.created_at,
+  };
+
+  return { success: true, data: service };
+}
+
+export async function deleteServiceAction(serviceId: string) {
+  await requireAdmin();
+  const supabase = getAdmin();
+
+  const { error } = await supabase
+    .from("services")
+    .update({
+      deleted_at: new Date().toISOString(),
+      status: "archived",
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", serviceId)
+    .is("deleted_at", null);
+
+  if (error) {
+    return { success: false, error: `Failed to delete service: ${error.message}` };
+  }
+
+  await supabase.from("service_activities").insert({
+    service_id: serviceId,
+    activity_type: "cancelled",
+    title: "Service Removed by Admin",
+    description: "Service was soft-deleted (archived) via admin panel.",
+    performed_by: "Admin",
+  });
+
+  revalidatePath("/admin/services");
+  revalidatePath("/admin/clients");
+  revalidatePath("/client/services");
+
   return { success: true };
 }
 

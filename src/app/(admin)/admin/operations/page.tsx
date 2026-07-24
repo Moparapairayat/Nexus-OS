@@ -146,7 +146,7 @@ export default function AdminOperationsCenterPage() {
           content: (
             <div className="pt-3 space-y-4">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs mobile-card-table">
                   <thead className="bg-muted/40 border-b border-border/60 text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
                     <tr>
                       <th className="p-3">Module</th>
@@ -160,18 +160,18 @@ export default function AdminOperationsCenterPage() {
                   <tbody className="divide-y divide-border/40">
                     {errors.map((err) => (
                       <tr key={err.id} className="hover:bg-muted/20 transition-colors">
-                        <td className="p-3 font-mono font-bold text-primary capitalize">{err.module}</td>
-                        <td className="p-3 font-medium text-foreground max-w-xs truncate">{err.errorMessage}</td>
-                        <td className="p-3">
+                        <td className="p-3 font-mono font-bold text-primary capitalize" data-label="Module">{err.module}</td>
+                        <td className="p-3 font-medium text-foreground max-w-xs truncate" data-label="Error Message">{err.errorMessage}</td>
+                        <td className="p-3" data-label="Severity">
                           <span className="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold bg-muted text-muted-foreground uppercase">
                             {err.severity}
                           </span>
                         </td>
-                        <td className="p-3">
+                        <td className="p-3" data-label="Status">
                           <StatusBadge status={err.status === "resolved" ? "active" : "pending"} customLabel={err.status} />
                         </td>
-                        <td className="p-3 font-mono text-muted-foreground">{new Date(err.createdAt).toLocaleString()}</td>
-                        <td className="p-3 text-right">
+                        <td className="p-3 font-mono text-muted-foreground" data-label="Logged At">{new Date(err.createdAt).toLocaleString()}</td>
+                        <td className="p-3 text-right" data-label="Action">
                           {err.status === "unresolved" && (
                             <Button variant="outline" size="sm" onClick={() => handleResolveError(err.id)} className="h-7 text-xs px-2.5">
                               Resolve

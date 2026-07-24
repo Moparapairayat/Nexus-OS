@@ -230,7 +230,7 @@ export default function AdminAutomationPage() {
 
           {/* Job Queue Table */}
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs mobile-card-table">
               <thead className="bg-muted/40 border-b border-border/60 text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
                 <tr>
                   <th className="p-3">Job ID</th>
@@ -243,13 +243,13 @@ export default function AdminAutomationPage() {
               <tbody className="divide-y divide-border/40">
                 {jobs.map((j) => (
                   <tr key={j.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="p-3 font-mono font-bold text-primary">{j.id.slice(0, 8)}...</td>
-                    <td className="p-3 font-semibold text-foreground">{j.workflowName}</td>
-                    <td className="p-3 font-mono text-muted-foreground">{j.triggerEvent}</td>
-                    <td className="p-3">
+                    <td className="p-3 font-mono font-bold text-primary" data-label="Job ID">{j.id.slice(0, 8)}...</td>
+                    <td className="p-3 font-semibold text-foreground" data-label="Matched Workflow">{j.workflowName}</td>
+                    <td className="p-3 font-mono text-muted-foreground" data-label="Trigger Event">{j.triggerEvent}</td>
+                    <td className="p-3" data-label="Status">
                       <StatusBadge status={j.status === "completed" ? "success" : "pending"} customLabel={j.status} />
                     </td>
-                    <td className="p-3 text-muted-foreground font-mono">{new Date(j.createdAt).toLocaleString()}</td>
+                    <td className="p-3 text-muted-foreground font-mono" data-label="Executed At">{new Date(j.createdAt).toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>

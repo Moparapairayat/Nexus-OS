@@ -133,60 +133,67 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
 
-      {/* Table Surface */}
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  {header.isPlaceholder ? null : (
-                    <div
-                      className={header.column.getCanSort() ? "flex items-center gap-1.5 cursor-pointer select-none" : ""}
-                      onClick={header.column.getToggleSortingHandler()}
-                    >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {header.column.getCanSort() && (
-                        <ArrowUpDown className="h-3 w-3 text-muted-foreground/70" />
-                      )}
-                    </div>
-                  )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
+      {/* Table Surface - mobile scrollable */}
+      <div className="w-full overflow-x-auto -mx-0 rounded-xl">
+        <Table className="min-w-[640px] mobile-card-table">
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id} className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {header.isPlaceholder ? null : (
+                      <div
+                        className={header.column.getCanSort() ? "flex items-center gap-1.5 cursor-pointer select-none" : ""}
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.column.getCanSort() && (
+                          <ArrowUpDown className="h-3 w-3 text-muted-foreground/70" />
+                        )}
+                      </div>
+                    )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
 
-        <TableBody>
-          {isLoading ? (
-            Array.from({ length: 5 }).map((_, idx) => (
-              <TableRow key={idx}>
-                {columns.map((_, colIdx) => (
-                  <TableCell key={colIdx}>
-                    <Skeleton className="h-5 w-full rounded-md" />
-                  </TableCell>
-                ))}
+          <TableBody>
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, idx) => (
+                <TableRow key={idx}>
+                  {columns.map((_, colIdx) => (
+                    <TableCell key={colIdx}>
+                      <Skeleton className="h-5 w-full rounded-md" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+) : table.getRowModel().rows?.length ? (
+  table.getRowModel().rows.map((row) => (
+    <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="text-xs font-medium">
+      {row.getVisibleCells().map((cell) => {
+        const labelText = typeof cell.column.columnDef.header === "string"
+          ? cell.column.columnDef.header
+          : cell.column.id;
+        return (
+          <TableCell key={cell.id} data-label={labelText}>
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </TableCell>
+        );
+      })}
+    </TableRow>
+  ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-48 text-center">
+                  <EmptyState title={emptyTitle} description={emptyDescription} />
+                </TableCell>
               </TableRow>
-            ))
-          ) : table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="text-xs font-medium">
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-48 text-center">
-                <EmptyState title={emptyTitle} description={emptyDescription} />
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
       {/* Pagination Footer */}
       {!isLoading && table.getRowCount() > 0 && (

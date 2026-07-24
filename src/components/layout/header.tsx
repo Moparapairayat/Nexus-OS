@@ -66,8 +66,18 @@ export function Header({ onOpenMobileNav }: HeaderProps) {
         </div>
 
         {/* Right Area: Search Trigger, Quick Action, Notifications, Theme, NavUser */}
-        <div className="flex items-center gap-2.5 shrink-0">
-          {/* Global Search Trigger (Cmd+K / Ctrl+K) */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          {/* Mobile Search Icon */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSearchOpen(true)}
+            className="md:hidden h-9 w-9 rounded-xl text-muted-foreground hover:text-foreground"
+          >
+            <Search className="h-4 w-4" />
+          </Button>
+
+          {/* Global Search Trigger (Cmd+K / Ctrl+K) - Desktop */}
           <button
             type="button"
             onClick={() => setSearchOpen(true)}
@@ -107,7 +117,7 @@ export function Header({ onOpenMobileNav }: HeaderProps) {
 
           <ThemeToggle />
 
-          <div className="h-4 w-px bg-border/60 mx-0.5" />
+          <div className="hidden sm:block h-4 w-px bg-border/60 mx-0.5" />
 
           <NavUser />
         </div>

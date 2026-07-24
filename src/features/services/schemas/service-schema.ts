@@ -46,4 +46,22 @@ export const assignServiceSchema = z.object({
   tags: z.array(z.string()).default([]),
 });
 
+export const updateServiceSchema = z.object({
+  customName: z.string().min(2, "Service / Asset name required."),
+  categoryId: z.string().min(1, "Please select a category."),
+  customPrice: z.number().min(0, "Price cannot be negative."),
+  currency: z.string().default("USD"),
+  billingCycle: z.enum(["one_time", "monthly", "quarterly", "semi_annual", "annual", "biennial"]).default("monthly"),
+  domainName: z.string().optional().or(z.literal("")),
+  serverIp: z.string().optional().or(z.literal("")),
+  cloudflareZoneId: z.string().optional().or(z.literal("")),
+  autoRenewal: z.boolean().default(true),
+  renewalDate: z.string().optional().or(z.literal("")),
+  serviceStatus: z.enum(["draft", "pending", "provisioning", "active", "suspended", "expired", "cancelled", "archived"]).default("active"),
+  internalNotes: z.string().optional().or(z.literal("")),
+  clientNotes: z.string().optional().or(z.literal("")),
+  tags: z.array(z.string()).default([]),
+});
+
 export type AssignServiceValues = z.infer<typeof assignServiceSchema>;
+export type UpdateServiceValues = z.infer<typeof updateServiceSchema>;

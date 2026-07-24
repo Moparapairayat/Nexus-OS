@@ -405,7 +405,7 @@ export default function AdminSupportWorkspacePage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs mobile-card-table">
               <thead className="bg-muted/40 border-b border-border/60 text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
                 <tr>
                   <th className="p-3">Ticket #</th>
@@ -421,23 +421,23 @@ export default function AdminSupportWorkspacePage() {
               <tbody className="divide-y divide-border/40">
                 {tickets.map((tkt) => (
                   <tr key={tkt.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="p-3 font-mono font-bold text-primary">{tkt.ticketNumber}</td>
-                    <td className="p-3">
+                    <td className="p-3 font-mono font-bold text-primary" data-label="Ticket #">{tkt.ticketNumber}</td>
+                    <td className="p-3" data-label="Client / Organization">
                       <span className="font-bold text-foreground block">{tkt.companyName}</span>
                       <span className="text-muted-foreground text-[11px]">{tkt.clientName}</span>
                     </td>
-                    <td className="p-3 font-medium text-foreground max-w-[200px] truncate">{tkt.subject}</td>
-                    <td className="p-3 capitalize text-muted-foreground font-semibold">{tkt.department}</td>
-                    <td className="p-3 capitalize font-bold">
+                    <td className="p-3 font-medium text-foreground max-w-[200px] truncate" data-label="Subject">{tkt.subject}</td>
+                    <td className="p-3 capitalize text-muted-foreground font-semibold" data-label="Department">{tkt.department}</td>
+                    <td className="p-3 capitalize font-bold" data-label="Priority">
                       <span className={tkt.priority === "urgent" || tkt.priority === "critical" ? "text-rose-500" : "text-foreground"}>
                         {tkt.priority}
                       </span>
                     </td>
-                    <td className="p-3">
+                    <td className="p-3" data-label="Status">
                       <StatusBadge status={tkt.status as any} />
                     </td>
-                    <td className="p-3 text-muted-foreground">{new Date(tkt.updatedAt).toLocaleDateString()}</td>
-                    <td className="p-3 text-right">
+                    <td className="p-3 text-muted-foreground" data-label="Updated">{new Date(tkt.updatedAt).toLocaleDateString()}</td>
+                    <td className="p-3 text-right" data-label="Actions">
                       <Button
                         variant="ghost"
                         size="sm"

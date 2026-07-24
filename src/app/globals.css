@@ -221,3 +221,139 @@
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.45);
 }
+
+/* ================================================
+   MOBILE RESPONSIVE UTILITIES
+   ================================================ */
+
+/* Hide scrollbar but keep scroll functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Remove blue tap highlight on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent font size auto-scaling on iOS */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Smooth touch momentum scrolling on iOS */
+.overflow-y-auto,
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure inputs don't auto-zoom on iOS (min font size 16px in forms) */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="search"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Mobile-safe bottom area padding */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ── XPANDED MOBILE RESPONSIVE UTILITIES ──────────────────── */
+
+/* Responsive typography scaling */
+@media (max-width: 640px) {
+  h1 { font-size: 1.25rem; line-height: 1.75rem; }
+  h2 { font-size: 1.125rem; line-height: 1.5rem; }
+  h3 { font-size: 1rem; line-height: 1.375rem; }
+  .text-xs { font-size: 0.65rem; line-height: 0.875rem; }
+  .text-sm { font-size: 0.75rem; line-height: 1rem; }
+  .text-base { font-size: 0.8125rem; line-height: 1.125rem; }
+}
+
+/* Dark glass fix for mobile - text readability */
+@media (max-width: 768px) {
+  .dark .glass-panel {
+    background: rgba(13, 17, 28, 0.88);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+  }
+}
+
+/* Mobile table: stack rows into cards below 768px */
+@media (max-width: 768px) {
+  .mobile-card-table thead { display: none; }
+  .mobile-card-table tbody { display: block; }
+  .mobile-card-table tr {
+    display: block;
+    margin-bottom: 0.75rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.75rem;
+    background: hsl(var(--card));
+    padding: 0.75rem;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+  }
+  .mobile-card-table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
+    font-size: 0.75rem;
+  }
+  .mobile-card-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.625rem;
+    letter-spacing: 0.05em;
+    color: hsl(var(--muted-foreground));
+    flex-shrink: 0;
+    min-width: 5rem;
+  }
+  .mobile-card-table td:last-child { border-bottom: none; }
+}
+
+/* Mobile scroll indicator fade for touch areas */
+@keyframes scrollHint {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+.has-scroll-indicator::-webkit-scrollbar { height: 4px; }
+.has-scroll-indicator::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: hsl(var(--primary) / 0.3);
+}
+
+/* Prevent pull-to-refresh interference */
+@media (max-width: 768px) {
+  body { overscroll-behavior-y: contain; }
+  main { overscroll-behavior-y: contain; }
+}
+
+/* Mobile pull-to-refresh prevention for modals/sheets */
+@media (max-width: 768px) {
+  [data-radix-popper-content-wrapper],
+  [data-radix-dialog-content],
+  [data-radix-sheet-content] {
+    overscroll-behavior: contain;
+  }
+}

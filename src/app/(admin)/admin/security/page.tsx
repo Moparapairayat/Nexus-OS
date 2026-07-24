@@ -200,7 +200,7 @@ export default function AdminSecurityOperationsCenterPage() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs mobile-card-table">
               <thead className="bg-muted/40 border-b border-border/60 text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
                 <tr>
                   <th className="p-3">Action Event</th>
@@ -214,19 +214,21 @@ export default function AdminSecurityOperationsCenterPage() {
               <tbody className="divide-y divide-border/40">
                 {filteredEvents.map((evt) => (
                   <tr key={evt.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="p-3 font-semibold text-foreground flex items-center gap-2">
-                      <ShieldCheck className="h-4 w-4 text-primary shrink-0" />
-                      <span>{evt.action}</span>
+                    <td className="p-3 font-semibold text-foreground" data-label="Action Event">
+                      <div className="flex items-center gap-2">
+                        <ShieldCheck className="h-4 w-4 text-primary shrink-0" />
+                        <span>{evt.action}</span>
+                      </div>
                     </td>
-                    <td className="p-3 font-medium text-muted-foreground">{evt.actorName}</td>
-                    <td className="p-3">
+                    <td className="p-3 font-medium text-muted-foreground" data-label="Actor">{evt.actorName}</td>
+                    <td className="p-3" data-label="Category">
                       <span className="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold bg-muted text-muted-foreground uppercase">
                         {evt.category}
                       </span>
                     </td>
-                    <td className="p-3">{getSeverityBadge(evt.severity)}</td>
-                    <td className="p-3 font-mono text-muted-foreground">{evt.ipAddress}</td>
-                    <td className="p-3 text-muted-foreground font-mono">{new Date(evt.createdAt).toLocaleString()}</td>
+                    <td className="p-3" data-label="Severity">{getSeverityBadge(evt.severity)}</td>
+                    <td className="p-3 font-mono text-muted-foreground" data-label="IP Address">{evt.ipAddress}</td>
+                    <td className="p-3 text-muted-foreground font-mono" data-label="Timestamp">{new Date(evt.createdAt).toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -241,7 +243,7 @@ export default function AdminSecurityOperationsCenterPage() {
       content: (
         <div className="pt-3 space-y-4">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs mobile-card-table">
               <thead className="bg-muted/40 border-b border-border/60 text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
                 <tr>
                   <th className="p-3">User Account</th>
@@ -254,7 +256,7 @@ export default function AdminSecurityOperationsCenterPage() {
               <tbody className="divide-y divide-border/40">
                 {sessions.map((sess) => (
                   <tr key={sess.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="p-3 font-bold text-foreground">
+                    <td className="p-3 font-bold text-foreground" data-label="User Account">
                       <span>{sess.userName}</span>
                       {sess.isCurrentSession && (
                         <span className="ml-2 text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-500 font-bold uppercase">
@@ -262,10 +264,10 @@ export default function AdminSecurityOperationsCenterPage() {
                         </span>
                       )}
                     </td>
-                    <td className="p-3 text-muted-foreground font-medium">{sess.deviceInfo}</td>
-                    <td className="p-3 font-mono text-muted-foreground">{sess.ipAddress}</td>
-                    <td className="p-3 text-muted-foreground font-mono">{new Date(sess.loginAt).toLocaleString()}</td>
-                    <td className="p-3 text-right">
+                    <td className="p-3 text-muted-foreground font-medium" data-label="Device & Browser">{sess.deviceInfo}</td>
+                    <td className="p-3 font-mono text-muted-foreground" data-label="IP Address">{sess.ipAddress}</td>
+                    <td className="p-3 text-muted-foreground font-mono" data-label="Login Time">{new Date(sess.loginAt).toLocaleString()}</td>
+                    <td className="p-3 text-right" data-label="Action">
                       <Button
                         variant="outline"
                         size="sm"
@@ -290,7 +292,7 @@ export default function AdminSecurityOperationsCenterPage() {
       content: (
         <div className="pt-3 space-y-4">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs mobile-card-table">
               <thead className="bg-muted/40 border-b border-border/60 text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
                 <tr>
                   <th className="p-3">Credential Action</th>
@@ -302,17 +304,19 @@ export default function AdminSecurityOperationsCenterPage() {
               <tbody className="divide-y divide-border/40">
                 {credLogs.map((log) => (
                   <tr key={log.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="p-3 font-semibold text-foreground flex items-center gap-2">
-                      <Key className="h-4 w-4 text-amber-500 shrink-0" />
-                      <span>Accessed Digital Vault Credential</span>
+                    <td className="p-3 font-semibold text-foreground" data-label="Credential Action">
+                      <div className="flex items-center gap-2">
+                        <Key className="h-4 w-4 text-amber-500 shrink-0" />
+                        <span>Accessed Digital Vault Credential</span>
+                      </div>
                     </td>
-                    <td className="p-3 font-medium text-muted-foreground">{log.actorName}</td>
-                    <td className="p-3">
+                    <td className="p-3 font-medium text-muted-foreground" data-label="Actor / Account">{log.actorName}</td>
+                    <td className="p-3" data-label="Action Type">
                       <span className="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold bg-muted text-muted-foreground uppercase">
                         {log.action}
                       </span>
                     </td>
-                    <td className="p-3 text-muted-foreground font-mono">{new Date(log.createdAt).toLocaleString()}</td>
+                    <td className="p-3 text-muted-foreground font-mono" data-label="Timestamp">{new Date(log.createdAt).toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>

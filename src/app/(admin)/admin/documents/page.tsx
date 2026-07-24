@@ -202,57 +202,57 @@ export default function AdminDigitalVaultPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-muted/40 border-b border-border/60 text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
-                  <tr>
-                    <th className="p-3">File Name</th>
-                    <th className="p-3">Client Organization</th>
-                    <th className="p-3">Category</th>
-                    <th className="p-3">Size</th>
-                    <th className="p-3">Downloads</th>
-                    <th className="p-3">Date Vaulted</th>
-                    <th className="p-3 text-right">Actions</th>
+            <table className="w-full text-left text-xs mobile-card-table">
+              <thead className="bg-muted/40 border-b border-border/60 text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
+                <tr>
+                  <th className="p-3">File Name</th>
+                  <th className="p-3">Client Organization</th>
+                  <th className="p-3">Category</th>
+                  <th className="p-3">Size</th>
+                  <th className="p-3">Downloads</th>
+                  <th className="p-3">Date Vaulted</th>
+                  <th className="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/40">
+                {filteredFiles.map((file) => (
+                  <tr key={file.id} className="hover:bg-muted/20 transition-colors">
+                    <td className="p-3 font-semibold text-foreground flex items-center gap-2.5" data-label="File Name">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted/50 border border-border shrink-0">
+                        {getCategoryIcon(file.category)}
+                      </div>
+                      <span className="truncate max-w-[220px]">{file.name}</span>
+                    </td>
+                    <td className="p-3" data-label="Client Organization">
+                      <span className="block font-bold text-foreground">{file.companyName}</span>
+                      <span className="text-[11px] text-muted-foreground">{file.clientName}</span>
+                    </td>
+                    <td className="p-3" data-label="Category">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold bg-muted text-muted-foreground capitalize">
+                        {file.category}
+                      </span>
+                    </td>
+                    <td className="p-3 font-mono text-muted-foreground" data-label="Size">{file.fileSize}</td>
+                    <td className="p-3" data-label="Downloads">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                        {file.downloadCount} Downloads
+                      </span>
+                    </td>
+                    <td className="p-3 text-muted-foreground" data-label="Date Vaulted">{new Date(file.createdAt).toLocaleDateString()}</td>
+                    <td className="p-3 text-right" data-label="Actions">
+                      <div className="flex items-center gap-1">
+                        <Button variant="outline" size="sm" onClick={() => handleDownload(file)} className="h-7 text-xs px-2.5 gap-1">
+                          <Download className="h-3 w-3" /> Download
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => handleDelete(file.id)} className="h-7 text-xs px-2 text-rose-500 hover:text-rose-600">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-border/40">
-                  {filteredFiles.map((file) => (
-                    <tr key={file.id} className="hover:bg-muted/20 transition-colors">
-                      <td className="p-3 font-semibold text-foreground flex items-center gap-2.5">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted/50 border border-border shrink-0">
-                          {getCategoryIcon(file.category)}
-                        </div>
-                        <span className="truncate max-w-[220px]">{file.name}</span>
-                      </td>
-                      <td className="p-3 font-bold text-foreground">
-                        <span className="block">{file.companyName}</span>
-                        <span className="text-[11px] text-muted-foreground">{file.clientName}</span>
-                      </td>
-                      <td className="p-3">
-                        <span className="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold bg-muted text-muted-foreground capitalize">
-                          {file.category}
-                        </span>
-                      </td>
-                      <td className="p-3 font-mono text-muted-foreground">{file.fileSize}</td>
-                      <td className="p-3">
-                        <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                          {file.downloadCount} Downloads
-                        </span>
-                      </td>
-                      <td className="p-3 text-muted-foreground">{new Date(file.createdAt).toLocaleDateString()}</td>
-                      <td className="p-3 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <Button variant="outline" size="sm" onClick={() => handleDownload(file)} className="h-7 text-xs px-2.5 gap-1">
-                            <Download className="h-3 w-3" /> Download
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => handleDelete(file.id)} className="h-7 text-xs px-2 text-rose-500 hover:text-rose-600">
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                ))}
+              </tbody>
+            </table>
             </div>
           )}
         </div>

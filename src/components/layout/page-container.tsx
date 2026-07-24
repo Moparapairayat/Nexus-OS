@@ -23,7 +23,7 @@ export function PageContainer({
   return (
     <div
       className={cn(
-        "w-full mx-auto p-4 md:p-6 lg:p-8 space-y-6 animate-in fade-in duration-200",
+        "w-full mx-auto px-2.5 py-3 sm:px-4 sm:py-5 md:px-6 md:py-5 lg:px-8 lg:py-6 space-y-4 md:space-y-6 animate-in fade-in duration-200",
         maxWidthMap[maxWidth],
         className
       )}

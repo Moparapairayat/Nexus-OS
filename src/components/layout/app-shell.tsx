@@ -48,7 +48,7 @@ export function AppShell({ role = USER_ROLES.CLIENT, children }: AppShellProps) 
       </Sheet>
 
       {/* Main Content Area */}
-      <div className="relative z-10 flex-1 flex flex-col min-w-0 pb-16 md:pb-0">
+      <div className="relative z-10 flex-1 flex flex-col min-w-0 pb-20 md:pb-0">
         <Header onOpenMobileNav={() => setMobileDrawerOpen(true)} />
 
         <main className="flex-1 overflow-y-auto">{children}</main>

@@ -232,7 +232,7 @@ export default function AdminCommunicationDashboardPage() {
       content: (
         <div className="pt-3 space-y-3">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs mobile-card-table">
               <thead className="bg-muted/40 border-b border-border/60 text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
                 <tr>
                   <th className="p-3">Recipient Email</th>
@@ -245,13 +245,13 @@ export default function AdminCommunicationDashboardPage() {
               <tbody className="divide-y divide-border/40">
                 {emailLogs.map((log) => (
                   <tr key={log.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="p-3 font-semibold text-foreground">{log.recipientEmail}</td>
-                    <td className="p-3 text-muted-foreground">{log.subject}</td>
-                    <td className="p-3 font-mono text-[11px]">{log.templateName}</td>
-                    <td className="p-3">
+                    <td className="p-3 font-semibold text-foreground" data-label="Recipient Email">{log.recipientEmail}</td>
+                    <td className="p-3 text-muted-foreground" data-label="Subject">{log.subject}</td>
+                    <td className="p-3 font-mono text-[11px]" data-label="Template">{log.templateName}</td>
+                    <td className="p-3" data-label="Status">
                       <StatusBadge status={log.status === "sent" ? "success" : "error"} customLabel={log.status} />
                     </td>
-                    <td className="p-3 text-muted-foreground">{new Date(log.sentAt).toLocaleString()}</td>
+                    <td className="p-3 text-muted-foreground" data-label="Sent At">{new Date(log.sentAt).toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
